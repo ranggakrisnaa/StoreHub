@@ -1,14 +1,24 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PrismaClient } from '@prisma/client';
+import { PrismaService } from 'src/prisma.service';
+import { Prisma, User } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaClient) { }
+  constructor(private prisma: PrismaService) { }
 
-  create(createUserDto: CreateUserDto) {
-    return this.prisma.user.create({ data: createUserDto })
+  async user(
+    userWhereUniqueInput: Prisma.UserWhereUniqueInput,
+  ): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: userWhereUniqueInput,
+    });
+  }
+
+
+  create(data: Prisma.UserCreateWithoutTokenInput): Promise<User> {
+    return this.prisma.user.create({ data: data })
   }
 
   findAll() {

@@ -1,19 +1,25 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, InternalServerErrorException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User as UserModel } from '@prisma/client';
+import { BcryptService } from 'src/bcrypt/bcrypt.service';
+
 
 @Controller('v1/users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService, private readonly bcryptService: BcryptService) { }
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
+  register(@Body() createUserDto: CreateUserDto): Promise<UserModel> {
     try {
-      return this.usersService.create(createUserDto);
+      const { password, confirmPassword } = createUserDto
+
+      if (password !== confirmPassword) throw new UnauthorizedException('Password is not match')
+      const hashPassword = this.bcryptService.hashPassword(confirmPassword)
+      return this.usersService.create({ email: createUserDto.email, username: createUserDto.username, name: createUserDto.name, password: hashPassword, role: createUserDto.role })
     } catch (error) {
       console.log(error);
-
       throw new InternalServerErrorException(error.message)
     }
   }
