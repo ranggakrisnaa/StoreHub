@@ -10,3 +10,12 @@ CREATE TABLE `users` (
 
     UNIQUE INDEX `users_id_key`(`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AlterTable
+ALTER TABLE `users` ADD COLUMN `role` ENUM('ADMIN', 'USER') NOT NULL DEFAULT 'USER' AFTER `password`;
+
+-- CreateIndex
+CREATE UNIQUE INDEX `users_username_key` ON `users`(`username`);
+
+-- CreateIndex
+CREATE UNIQUE INDEX `users_email_key` ON `users`(`email`);

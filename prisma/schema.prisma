@@ -16,8 +16,8 @@ datasource db {
 model User {
   id        Int      @unique @default(autoincrement())
   name      String   @db.VarChar(200)
-  username  String   @db.VarChar(200)
-  email     String   @db.VarChar(200)
+  username  String   @unique @db.VarChar(200)
+  email     String   @unique @db.VarChar(200)
   password  String   @db.VarChar(200)
   role      Role     @default(USER)
   createdAt DateTime @default(now()) @map("created_at")
