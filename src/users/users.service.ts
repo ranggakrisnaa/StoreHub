@@ -25,8 +25,19 @@ export class UsersService {
     return `This action returns all users`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findOneByEmailOrUsername(email: string, username: string) {
+    return this.prisma.user.findFirst({
+      where: {
+        OR: [
+          {
+            email
+          },
+          {
+            username
+          }
+        ]
+      }
+    })
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

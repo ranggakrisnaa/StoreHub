@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, InternalServerErrorException, UnauthorizedException, Res, HttpStatus, NotFoundException, } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User as UserModel } from '@prisma/client';
 import { BcryptService } from 'src/bcrypt/bcrypt.service';
+import { Response } from 'express';
+import { LoginUserDto } from './dto/login-dto.dto';
 
 
 @Controller('v1/users')
@@ -11,15 +13,39 @@ export class UsersController {
   constructor(private readonly usersService: UsersService, private readonly bcryptService: BcryptService) { }
 
   @Post()
-  register(@Body() createUserDto: CreateUserDto): Promise<UserModel> {
+  async register(@Body() createUserDto: CreateUserDto, @Res() res: Response): Promise<Record<string, any>> {
     try {
-      const { password, confirmPassword } = createUserDto
+      const { email, name, username, role, password, confirmPassword } = createUserDto
 
       if (password !== confirmPassword) throw new UnauthorizedException('Password is not match')
       const hashPassword = this.bcryptService.hashPassword(confirmPassword)
-      return this.usersService.create({ email: createUserDto.email, username: createUserDto.username, name: createUserDto.name, password: hashPassword, role: createUserDto.role })
+
+      await this.usersService.create({ email, username, name, password: hashPassword, role })
+
+      return res.status(HttpStatus.CREATED).json({
+        success: true,
+        message: "User created successfully."
+      })
     } catch (error) {
-      console.log(error);
+      throw new InternalServerErrorException(error.message)
+    }
+  }
+
+  @Post()
+  async login(@Body() loginUserDto: LoginUserDto, @Res() res: Response): Promise<Record<string, any>> {
+    const { username, email, password } = loginUserDto
+
+    const data = await this.usersService.findOneByEmailOrUsername(username, email)
+    if (!data) throw new NotFoundException('User name or email is not found.')
+    try {
+      const checkPassword = this.bcryptService.comparePassword(password, data.password)
+      if (!checkPassword) throw new UnauthorizedException('Password is invalid.')
+
+      return res.status(HttpStatus.OK).json({
+        success: true,
+        message: "User login successfully."
+      })
+    } catch (error) {
       throw new InternalServerErrorException(error.message)
     }
   }
