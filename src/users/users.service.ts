@@ -1,6 +1,4 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma.service';
 import { Prisma, User } from '@prisma/client';
 
@@ -25,26 +23,19 @@ export class UsersService {
     return `This action returns all users`;
   }
 
-  findOneByEmailOrUsername(email: string, username: string) {
+  findOneByEmailOrUsername(usernameOrEmail: string) {
     return this.prisma.user.findFirst({
       where: {
         OR: [
           {
-            email
+            email: { equals: usernameOrEmail }
           },
           {
-            username
+            username: { equals: usernameOrEmail }
           }
         ]
       }
     })
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
 }
