@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -24,20 +24,27 @@ model User {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   Token Token[]
+  Otp   Otp[]
 
   @@map("users")
-}
-
-enum Role {
-  ADMIN
-  USER
 }
 
 model Token {
   id           Int      @unique @default(autoincrement())
   userId       Int      @map("user_id")
-  token        String   @db.VarChar(200)
+  accesToken   String   @db.VarChar(200)
   refreshToken String   @map("refresh_token") @db.VarChar(200)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("tokens")
+}
+
+model Otp {
+  id           Int      @unique @default(autoincrement())
+  userId       Int      @map("user_id")
   otp          Int
   otpExpiredAt Int      @map("otp_expired_at")
   otpTryDaily  Int      @map("otp_try_daily")
@@ -46,5 +53,10 @@ model Token {
 
   user User @relation(fields: [userId], references: [id])
 
-  @@map("tokens")
+  @@map("otps")
+}
+
+enum Role {
+  ADMIN
+  USER
 }
