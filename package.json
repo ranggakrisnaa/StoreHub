@@ -28,9 +28,16 @@
     "migrate:reset": "npx prisma migrate reset --force",
     "prepare": "husky"
   },
+  "lint-staged": {
+    "*.{js,ts,jsx,tsx}": [
+      "prettier --write",
+      "eslint --fix",
+      "git add"
+    ]
+  },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "npx lint-staged"
     }
   },
   "dependencies": {
@@ -88,8 +95,5 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  },
-  "lint-staged": {
-    "*.js": "eslint --cache --fix"
   }
 }

@@ -1,1 +1,4 @@
-git-format-staged -f 'prettier --ignore-unknown --stdin --stdin-filepath "{}"' .
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+npx lint-staged
