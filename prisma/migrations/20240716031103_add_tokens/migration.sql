@@ -2,7 +2,7 @@
 CREATE TABLE "tokens" (
     "id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
-    "accesToken" VARCHAR(200) NOT NULL,
+    "access_token" VARCHAR(200) NOT NULL,
     "refresh_token" VARCHAR(200) NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL

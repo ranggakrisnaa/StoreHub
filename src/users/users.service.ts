@@ -6,36 +6,21 @@ import { Prisma, User } from '@prisma/client';
 export class UsersService {
   constructor(private prisma: PrismaService) { }
 
-  async user(
-    userWhereUniqueInput: Prisma.UserWhereUniqueInput,
+  async findUser(
+    where: Prisma.UserWhereInput,
   ): Promise<User | null> {
-    return this.prisma.user.findUnique({
-      where: userWhereUniqueInput,
+    return this.prisma.user.findFirst({
+      where
     });
   }
 
 
-  create(data: Prisma.UserCreateWithoutTokenInput): Promise<User> {
+  async createUser(data: Prisma.UserCreateWithoutTokenInput): Promise<User | null> {
     return this.prisma.user.create({ data: data })
   }
 
-  findAll() {
-    return `This action returns all users`;
-  }
-
-  findOneByEmailOrUsername(usernameOrEmail: string) {
-    return this.prisma.user.findFirst({
-      where: {
-        OR: [
-          {
-            email: { equals: usernameOrEmail }
-          },
-          {
-            username: { equals: usernameOrEmail }
-          }
-        ]
-      }
-    })
+  async findOneByEmailOrUsername(usernameOrEmail: string): Promise<User | null> {
+    return await this.prisma.user.findFirst()
   }
 
 }
