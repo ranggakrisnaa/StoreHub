@@ -25,7 +25,13 @@
     "migrate:create": "npx prisma migrate dev --create-only",
     "migrate:dev": "npx prisma migrate dev",
     "migrate:prod": "npx prisma migrate deploy",
-    "migrate:reset": "npx prisma migrate reset --force"
+    "migrate:reset": "npx prisma migrate reset --force",
+    "prepare": "husky"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -53,6 +59,8 @@
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
+    "git-format-staged": "^3.1.1",
+    "husky": "^9.0.11",
     "jest": "^29.5.0",
     "prettier": "^3.0.0",
     "prisma": "^5.16.1",
@@ -80,5 +88,8 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix"
   }
 }
