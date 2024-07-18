@@ -60,7 +60,7 @@ export class UsersController {
     @Post('login')
     async login(@Body() loginUserDto: LoginUserDto, @Res() res: Response): Promise<Record<string, any>> {
         const { usernameOrEmail, password } = loginUserDto;
-        const data = await this.usersService.findUser({
+        const data: Prisma.UserGetPayload<{}> = await this.usersService.findUser({
             OR: [{ email: usernameOrEmail }, { username: usernameOrEmail }],
         });
         if (!data) throw new NotFoundException('User name or email is not found.');
