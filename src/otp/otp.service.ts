@@ -81,6 +81,7 @@ export class OtpService {
     async findOtp(where: Prisma.OtpWhereInput): Promise<Otp | null> {
         return this.prisma.otp.findFirst({
             where,
+            orderBy: { createdAt: 'desc' },
         });
     }
 }

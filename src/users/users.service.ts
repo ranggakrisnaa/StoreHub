@@ -1,10 +1,15 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
-import { Prisma, User } from '@prisma/client';
+import { Prisma, Token, User } from '@prisma/client';
+import { JwtPayload } from 'src/auth/interface/jwt.inteface';
+import { JwtStrategy } from 'src/auth/jwt.strategy';
 
 @Injectable()
 export class UsersService {
-    constructor(private prisma: PrismaService) {}
+    constructor(
+        private prisma: PrismaService,
+        private readonly jwtService: JwtStrategy,
+    ) {}
 
     async findUser(where: Prisma.UserWhereInput): Promise<User | null> {
         return this.prisma.user.findFirst({
@@ -18,5 +23,28 @@ export class UsersService {
 
     async findOneByEmailOrUsername(usernameOrEmail: string): Promise<User | null> {
         return await this.prisma.user.findFirst();
+    }
+
+    async generateAccessToken(data: User): Promise<string> {
+        const payload: JwtPayload = { userId: data.id, email: data.email };
+        return this.jwtService.signAccessToken(payload);
+    }
+
+    async generateRefreshToken(data: User): Promise<string> {
+        const payload: JwtPayload = { userId: data.id, email: data.email };
+        return this.jwtService.signRefreshToken(payload);
+    }
+
+    async saveToken(data: Prisma.TokenCreateWithoutUserInput, userId: number): Promise<Token | null> {
+        return this.prisma.token.create({
+            data: {
+                ...data,
+                user: {
+                    connect: {
+                        id: userId,
+                    },
+                },
+            },
+        });
     }
 }

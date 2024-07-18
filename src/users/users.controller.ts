@@ -17,6 +17,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { OtpService } from 'src/otp/otp.service';
 import { Prisma } from '@prisma/client';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
+import { JwtPayload } from 'src/auth/interface/jwt.inteface';
 
 @Controller('v1/users')
 export class UsersController {
@@ -94,7 +95,7 @@ export class UsersController {
     @Post('verify-otp')
     async verify(@Body() verifyOtpDto: VerifyOtpDto, @Res() res: Response): Promise<Record<string, any>> {
         const { email, otp } = verifyOtpDto;
-        const data = await this.usersService.findUser({
+        const data: Prisma.UserGetPayload<{}> = await this.usersService.findUser({
             email,
         });
         if (!data) throw new NotFoundException('User email is not found.');
@@ -103,10 +104,23 @@ export class UsersController {
             const foundOtp: Prisma.OtpGetPayload<{}> = await this.otpService.findOtp({ userId: data.id });
             if (foundOtp.otp !== otp) throw new UnauthorizedException('Otp code is invalid.');
 
+            const accessToken: string = await this.usersService.generateAccessToken(data);
+            const refreshToken: string = await this.usersService.generateRefreshToken(data);
+
+            const payload: Prisma.TokenCreateWithoutUserInput = {
+                accessToken,
+                refreshToken,
+            };
+            await this.usersService.saveToken(payload, data.id);
+
             return res.status(HttpStatus.OK).json({
                 success: true,
                 statusCode: HttpStatus.OK,
                 message: 'User verified successfully.',
+                meta: {
+                    accessToken,
+                    refreshToken,
+                },
             });
         } catch (error) {
             if (error !== InternalServerErrorException) {
