@@ -1,15 +1,20 @@
-import { Controller, Post, Body, Param, InternalServerErrorException } from '@nestjs/common';
+import { Controller, Post, Body, Param, InternalServerErrorException, Res, HttpStatus } from '@nestjs/common';
 import { OtpService } from './otp.service';
+import { Response } from 'express';
 
 @Controller('v1/otps')
 export class OtpController {
     constructor(private readonly otpService: OtpService) {}
 
     @Post('send-sms')
-    async sendSmsOtp(@Body('phoneNumber') phoneNumber: string) {
+    async sendSmsOtp(@Body('phoneNumber') phoneNumber: string, @Res() res: Response): Promise<Record<string, any>> {
         try {
             await this.otpService.sendSmsOtp(phoneNumber);
-            return { message: 'OTP sent to phone number' };
+            return res.status(HttpStatus.OK).json({
+                success: true,
+                statusCode: HttpStatus.OK,
+                message: 'OTP sent to phone number.',
+            });
         } catch (error) {
             if (error !== InternalServerErrorException) {
                 throw error;
@@ -20,10 +25,14 @@ export class OtpController {
     }
 
     @Post('send-email')
-    async sendEmailOtp(@Body('email') email: string) {
+    async sendEmailOtp(@Body('email') email: string, @Res() res: Response): Promise<Record<string, any>> {
         try {
             await this.otpService.sendEmailOtp(email);
-            return { message: 'OTP sent to email address' };
+            return res.status(HttpStatus.OK).json({
+                success: true,
+                statusCode: HttpStatus.OK,
+                message: 'OTP sent to email address.',
+            });
         } catch (error) {
             if (error !== InternalServerErrorException) {
                 throw error;

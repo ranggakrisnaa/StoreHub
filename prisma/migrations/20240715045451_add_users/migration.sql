@@ -21,3 +21,9 @@ CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- AlterTable
+ALTER TABLE "users" ALTER COLUMN "name" SET DATA TYPE TEXT,
+ALTER COLUMN "username" SET DATA TYPE TEXT,
+ALTER COLUMN "email" SET DATA TYPE TEXT,
+ALTER COLUMN "password" SET DATA TYPE TEXT;

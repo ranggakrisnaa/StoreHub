@@ -10,7 +10,7 @@ export class CreateUserDto {
     username: string;
 
     @IsNotEmpty()
-    @IsEmail()
+    @IsEmail({}, { message: 'Invalid email address' })
     @IsString()
     email: string;
 
@@ -25,4 +25,3 @@ export class CreateUserDto {
     @IsString()
     confirmPassword: string;
 }
-

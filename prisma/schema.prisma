@@ -15,10 +15,10 @@ datasource db {
 
 model User {
   id        Int      @unique @default(autoincrement())
-  name      String   @db.VarChar(200)
-  username  String   @unique @db.VarChar(200)
-  email     String   @unique @db.VarChar(200)
-  password  String   @db.VarChar(200)
+  name      String
+  username  String   @unique
+  email     String   @unique
+  password  String
   role      Role     @default(USER)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -32,8 +32,8 @@ model User {
 model Token {
   id           Int      @unique @default(autoincrement())
   userId       Int      @map("user_id")
-  accesToken   String   @map("access_token") @db.VarChar(200)
-  refreshToken String   @map("refresh_token") @db.VarChar(200)
+  accesToken   String   @map("access_token")
+  refreshToken String   @map("refresh_token")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
@@ -43,13 +43,12 @@ model Token {
 }
 
 model Otp {
-  id           Int      @unique @default(autoincrement())
-  userId       Int      @map("user_id")
-  otp          Int
-  otpExpiredAt Int      @map("otp_expired_at")
-  otpTryDaily  Int      @map("otp_try_daily")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  id        Int      @unique @default(autoincrement())
+  userId    Int      @map("user_id")
+  otp       Int
+  type      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id])
 

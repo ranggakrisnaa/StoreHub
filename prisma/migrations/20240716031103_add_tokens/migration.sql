@@ -13,3 +13,7 @@ CREATE UNIQUE INDEX "tokens_id_key" ON "tokens"("id");
 
 -- AddForeignKey
 ALTER TABLE "tokens" ADD CONSTRAINT "tokens_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AlterTable
+ALTER TABLE "tokens" ALTER COLUMN "access_token" SET DATA TYPE TEXT,
+ALTER COLUMN "refresh_token" SET DATA TYPE TEXT;

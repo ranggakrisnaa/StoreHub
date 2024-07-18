@@ -3,8 +3,7 @@ CREATE TABLE "otps" (
     "id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
     "otp" INTEGER NOT NULL,
-    "otp_expired_at" INTEGER NOT NULL,
-    "otp_try_daily" INTEGER NOT NULL,
+    "type" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL
 );
