@@ -10,6 +10,8 @@ import { Otp, Prisma } from '@prisma/client';
 export class OtpService {
     private readonly twilioClient: Twilio;
     private readonly transporter: any;
+    private otpThrottleLimit: number = 1;
+    private otpTryDailyLimit: number = 5;
 
     constructor(
         private readonly configService: ConfigService,
@@ -83,5 +85,41 @@ export class OtpService {
             where,
             orderBy: { createdAt: 'desc' },
         });
+    }
+
+    async checkThrottle(email: string, type: string): Promise<boolean> {
+        const foundOtp = await this.prisma.otp.findFirst({
+            where: {
+                user: {
+                    email,
+                },
+                type,
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
+        if (!foundOtp) return false;
+        if ((new Date().getTime() - new Date(foundOtp.createdAt).getTime()) / 60000 < this.otpThrottleLimit)
+            return true;
+
+        return false;
+    }
+
+    async checkDayLimit(email: string, type: string): Promise<boolean> {
+        const foundOtp = await this.prisma.otp.findMany({
+            where: {
+                user: {
+                    email,
+                },
+                type,
+                createdAt: {
+                    gte: new Date(new Date().setHours(0, 0, 0, 0)),
+                },
+            },
+        });
+        if (foundOtp.length >= this.otpTryDailyLimit) return true;
+
+        return false;
     }
 }

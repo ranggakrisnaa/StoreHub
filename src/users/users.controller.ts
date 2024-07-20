@@ -69,6 +69,13 @@ export class UsersController {
             const checkPassword = await this.bcryptService.comparePassword(password, data.password);
             if (!checkPassword) throw new BadRequestException('Password is invalid.');
 
+            if (await this.otpService.checkDayLimit(data.email, 'login'))
+                throw new BadRequestException('Batas percobaan harian telah tercapai.');
+            if (await this.otpService.checkThrottle(data.email, 'login'))
+                throw new BadRequestException(
+                    'Anda telah melebihi batas dalam permintaan otp. Coba lagi dalam 1 menit.',
+                );
+
             const otp: string = await this.otpService.sendEmailOtp(data.email);
             const payload: Prisma.OtpCreateWithoutUserInput = {
                 otp: parseInt(otp),
