@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
+import { UsersModule } from './users/user.module';
 import { BcryptModule } from './bcrypt/bcrypt.module';
 import { PassportModule } from '@nestjs/passport';
-import { OtpModule } from './otp/otp.module';
+import { OtpModule } from './otps/otp.module';
 import { ConfigModule } from '@nestjs/config';
-import otpConfig from './otp/otp.config';
+import { TokenModule } from './tokens/token.module';
+import otpConfig from './otps/otp.config';
 
 @Module({
     imports: [
@@ -18,6 +19,7 @@ import otpConfig from './otp/otp.config';
             load: [otpConfig],
             isGlobal: true,
         }),
+        TokenModule,
     ],
     controllers: [AppController],
     providers: [AppService],

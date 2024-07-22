@@ -9,20 +9,20 @@ import {
     NotFoundException,
     BadRequestException,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/register-user.dto';
 import { BcryptService } from 'src/bcrypt/bcrypt.service';
 import { Response } from 'express';
 import { LoginUserDto } from './dto/login-user.dto';
-import { OtpService } from 'src/otp/otp.service';
 import { Prisma } from '@prisma/client';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { JwtPayload } from 'src/auth/interface/jwt.inteface';
+import { OtpService } from 'src/otps/otp.service';
+import { UserService } from './user.service';
 
 @Controller('v1/users')
-export class UsersController {
+export class UserController {
     constructor(
-        private readonly usersService: UsersService,
+        private readonly usersService: UserService,
         private readonly bcryptService: BcryptService,
         private readonly otpService: OtpService,
     ) {}

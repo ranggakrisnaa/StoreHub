@@ -5,7 +5,7 @@ import { JwtPayload } from 'src/auth/interface/jwt.inteface';
 import { JwtStrategy } from 'src/auth/jwt.strategy';
 
 @Injectable()
-export class UsersService {
+export class UserService {
     constructor(
         private prisma: PrismaService,
         private readonly jwtService: JwtStrategy,
