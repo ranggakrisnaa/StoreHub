@@ -32,7 +32,7 @@ export class UserController {
         const { email, name, username, role, password, confirmPassword } = createUserDto;
         try {
             if (password !== confirmPassword) throw new UnauthorizedException('Password is not match');
-            const hashPassword = await this.bcryptService.hashPassword(confirmPassword);
+            const hashPassword: string = await this.bcryptService.hashPassword(confirmPassword);
 
             const data: Prisma.UserCreateInput = await this.usersService.createUser({
                 email,
@@ -66,7 +66,7 @@ export class UserController {
         if (!data) throw new NotFoundException('User name or email is not found.');
 
         try {
-            const checkPassword = await this.bcryptService.comparePassword(password, data.password);
+            const checkPassword: boolean = await this.bcryptService.comparePassword(password, data.password);
             if (!checkPassword) throw new BadRequestException('Password is invalid.');
 
             if (await this.otpService.checkDayLimit(data.email, 'login'))

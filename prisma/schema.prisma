@@ -14,17 +14,19 @@ datasource db {
 }
 
 model User {
-  id        Int      @unique @default(autoincrement())
-  name      String
-  username  String   @unique
-  email     String   @unique
-  password  String
-  role      Role     @default(USER)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  Token Token[]
-  Otp   Otp[]
+  id        Int       @unique @default(autoincrement())
+  uuid      String    @default(uuid()) @db.Uuid
+  name      String    @db.VarChar(200)
+  username  String    @unique @db.VarChar(100)
+  email     String    @unique @db.VarChar(200)
+  password  String    @db.VarChar(100)
+  role      Role      @default(USER)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  Token     Token[]
+  Otp       Otp[]
+  Store     Store[]
+  Address   Address[]
 
   @@map("users")
 }
@@ -39,6 +41,7 @@ model Token {
 
   user User @relation(fields: [userId], references: [id])
 
+  @@index([userId])
   @@map("tokens")
 }
 
@@ -46,13 +49,86 @@ model Otp {
   id        Int      @unique @default(autoincrement())
   userId    Int      @map("user_id")
   otp       Int
-  type      String
+  type      String   @db.VarChar(50)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  user User @relation(fields: [userId], references: [id])
+  User User @relation(fields: [userId], references: [id])
 
+  @@index([userId])
   @@map("otps")
+}
+
+model Store {
+  id          Int      @unique @default(autoincrement())
+  uuid        String   @default(uuid()) @db.Uuid
+  userId      Int      @map("user_id")
+  name        String   @db.VarChar(200)
+  description String   @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  User    User      @relation(fields: [userId], references: [id])
+  Address Address[]
+
+  @@index([userId])
+  @@map("stores")
+}
+
+model Address {
+  id         Int      @unique @default(autoincrement())
+  userId     Int      @map("user_id")
+  storeId    Int      @map("store_id")
+  districtId Int      @map("district_id")
+  address    String   @db.Text
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  User  User  @relation(fields: [userId], references: [id])
+  Store Store @relation(fields: [storeId], references: [id])
+
+  @@index([userId, storeId, districtId])
+  @@map("addresses")
+}
+
+model District {
+  id        Int      @unique @default(autoincrement())
+  uuid      String   @default(uuid()) @db.Uuid
+  cityId    Int      @map("city_id")
+  name      String   @db.VarChar(100)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  City City @relation(fields: [cityId], references: [id])
+
+  @@index([cityId])
+  @@map("districts")
+}
+
+model City {
+  id         Int      @unique @default(autoincrement())
+  uuid       String   @unique @default(uuid()) @db.Uuid
+  provinceId Int      @map("province_id")
+  name       String   @db.VarChar(100)
+  type       String   @db.VarChar(100)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  Province Province   @relation(fields: [provinceId], references: [id])
+  District District[]
+
+  @@index([provinceId])
+  @@map("cities")
+}
+
+model Province {
+  id        Int      @unique @default(autoincrement())
+  name      String   @db.VarChar(100)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  City      City[]
+
+  @@map("provinces")
 }
 
 enum Role {

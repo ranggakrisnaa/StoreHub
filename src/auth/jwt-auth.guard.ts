@@ -1,5 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Prisma } from '@prisma/client';
 import { JwtPayload } from 'jsonwebtoken';
 import { TokenService } from 'src/tokens/token.service';
 import { UserService } from 'src/users/user.service';
@@ -23,10 +24,10 @@ export class JwtAuthGuard implements CanActivate {
             const decoded: JwtPayload = this.jwtService.verify(token);
             if (!decoded) throw new ForbiddenException('Token is invalid.');
 
-            const foundToken = await this.tokenService.findToken({ accessToken: token });
+            const foundToken: Prisma.TokenGetPayload<{}> = await this.tokenService.findToken({ accessToken: token });
             if (!foundToken) throw new ForbiddenException('Unauthenticated User.');
 
-            const foundUser = await this.userService.findUser({ email: decoded.email });
+            const foundUser: Prisma.UserGetPayload<{}> = await this.userService.findUser({ email: decoded.email });
             if (!foundUser) throw new ForbiddenException('Unauthenticated User.');
 
             request.user = foundUser;
