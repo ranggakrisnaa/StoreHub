@@ -108,8 +108,8 @@ export class UserController {
         if (!data) throw new NotFoundException('User email is not found.');
 
         try {
-            const foundOtp: Prisma.OtpGetPayload<{}> = await this.otpService.findOtp({ userId: data.id });
-            if (foundOtp.otp !== otp) throw new UnauthorizedException('Otp code is invalid.');
+            const verify: boolean = await this.otpService.verifyOtp(data.id, 'login', otp);
+            if (!verify) throw new BadRequestException('Otp expired or invalid.');
 
             const accessToken: string = await this.usersService.generateAccessToken(data);
             const refreshToken: string = await this.usersService.generateRefreshToken(data);

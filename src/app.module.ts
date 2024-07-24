@@ -7,6 +7,7 @@ import { PassportModule } from '@nestjs/passport';
 import { OtpModule } from './otps/otp.module';
 import { ConfigModule } from '@nestjs/config';
 import { TokenModule } from './tokens/token.module';
+import { StoreModule } from './stores/store.module';
 import otpConfig from './otps/otp.config';
 
 @Module({
@@ -20,6 +21,7 @@ import otpConfig from './otps/otp.config';
             isGlobal: true,
         }),
         TokenModule,
+        StoreModule,
     ],
     controllers: [AppController],
     providers: [AppService],

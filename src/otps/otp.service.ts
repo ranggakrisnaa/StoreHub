@@ -12,6 +12,7 @@ export class OtpService {
     private readonly transporter: any;
     private otpThrottleLimit: number = 1;
     private otpTryDailyLimit: number = 5;
+    private otpExpiredTime: number = 5;
 
     constructor(
         private readonly configService: ConfigService,
@@ -63,7 +64,18 @@ export class OtpService {
         return otp;
     }
 
-    async verifyOtp(code: string, phoneNumberOrEmail: string): Promise<boolean> {
+    async verifyOtp(userId: number, type: string, otp: number): Promise<boolean> {
+        const foundOtp = await this.prisma.otp.findFirst({
+            where: {
+                AND: [{ userId }, { type }, { otp }],
+            },
+        });
+        if (!foundOtp) return false;
+
+        if ((new Date().getTime() - new Date(foundOtp.createdAt).getTime()) / 60000 > this.otpExpiredTime) {
+            return false;
+        }
+
         return true;
     }
 
@@ -71,7 +83,7 @@ export class OtpService {
         return this.prisma.otp.create({
             data: {
                 ...data,
-                user: {
+                User: {
                     connect: {
                         id: userId,
                     },
@@ -90,7 +102,7 @@ export class OtpService {
     async checkThrottle(email: string, type: string): Promise<boolean> {
         const foundOtp = await this.prisma.otp.findFirst({
             where: {
-                user: {
+                User: {
                     email,
                 },
                 type,
@@ -109,7 +121,7 @@ export class OtpService {
     async checkDayLimit(email: string, type: string): Promise<boolean> {
         const foundOtp = await this.prisma.otp.findMany({
             where: {
-                user: {
+                User: {
                     email,
                 },
                 type,

@@ -17,7 +17,7 @@ export class UserService {
         });
     }
 
-    async createUser(data: Prisma.UserCreateInput): Promise<User | null> {
+    async createUser(data: Prisma.UserCreateInput): Promise<User> {
         return this.prisma.user.create({ data: data });
     }
 
@@ -35,11 +35,11 @@ export class UserService {
         return this.jwtService.signRefreshToken(payload);
     }
 
-    async saveToken(data: Prisma.TokenCreateWithoutUserInput, userId: number): Promise<Token | null> {
+    async saveToken(data: Prisma.TokenCreateWithoutUserInput, userId: number): Promise<Token> {
         return this.prisma.token.create({
             data: {
                 ...data,
-                user: {
+                User: {
                     connect: {
                         id: userId,
                     },
