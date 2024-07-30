@@ -1,4 +1,12 @@
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
+import {
+    Injectable,
+    CanActivate,
+    ExecutionContext,
+    ForbiddenException,
+    InternalServerErrorException,
+    UnauthorizedException,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Prisma } from '@prisma/client';
 import { JwtPayload } from 'jsonwebtoken';
@@ -11,18 +19,19 @@ export class JwtAuthGuard implements CanActivate {
         private readonly jwtService: JwtService,
         private readonly tokenService: TokenService,
         private readonly userService: UserService,
+        private readonly configService: ConfigService,
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        const request = context.switchToHttp().getRequest();
-        const authHeader = request.headers.authorization;
-
-        if (!authHeader) return false;
-        const token = authHeader.split(' ')[1];
-
         try {
-            const decoded: JwtPayload = this.jwtService.verify(token);
-            if (!decoded) throw new ForbiddenException('Token is invalid.');
+            const request = context.switchToHttp().getRequest();
+            const authHeader = request.headers.authorization;
+
+            if (!authHeader) return false;
+            const token = authHeader.split(' ')[1];
+            const decoded: JwtPayload = await this.jwtService.verifyAsync(token, {
+                secret: this.configService.get('JWT_SECRET'),
+            });
 
             const foundToken: Prisma.TokenGetPayload<{}> = await this.tokenService.findToken({ accessToken: token });
             if (!foundToken) throw new ForbiddenException('Unauthenticated User.');
@@ -34,8 +43,8 @@ export class JwtAuthGuard implements CanActivate {
             request.token = foundToken;
 
             return true;
-        } catch (err) {
-            return false;
+        } catch (error) {
+            throw new UnauthorizedException(error.message);
         }
     }
 }

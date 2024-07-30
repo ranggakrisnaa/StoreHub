@@ -6,7 +6,7 @@ import { PrismaService } from 'src/prisma.service';
 export class StoreService {
     constructor(private readonly prisma: PrismaService) {}
 
-    async createStore(data: Prisma.StoreCreateInput, userId: number): Promise<Store> {
+    async createStore(data: Prisma.StoreCreateWithoutUserInput, userId: number): Promise<Store> {
         return this.prisma.store.create({
             data: {
                 ...data,

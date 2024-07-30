@@ -1,20 +1,10 @@
-import {
-    Controller,
-    Post,
-    Body,
-    InternalServerErrorException,
-    Res,
-    HttpStatus,
-    NotFoundException,
-    BadRequestException,
-} from '@nestjs/common';
+import { Controller, Post, Body, InternalServerErrorException, Res, HttpStatus } from '@nestjs/common';
 import { CreateUserDto } from './dto/register-user.dto';
 import { Response } from 'express';
 import { LoginUserDto } from './dto/login-user.dto';
-import { Prisma } from '@prisma/client';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
-import { OtpService } from 'src/otps/otp.service';
 import { UserService } from './user.service';
+import { ApiResponse } from 'src/api-response.dto';
 
 @Controller('v1/users')
 export class UserController {
@@ -25,12 +15,7 @@ export class UserController {
         try {
             const data = await this.usersService.register(createUserDto);
 
-            return res.status(HttpStatus.CREATED).json({
-                success: true,
-                statusCode: HttpStatus.CREATED,
-                message: 'User created successfully.',
-                data,
-            });
+            return new ApiResponse(HttpStatus.CREATED, 'User created successfully.', data).sendResponse(res);
         } catch (error) {
             throw new InternalServerErrorException(error.message);
         }
@@ -41,13 +26,9 @@ export class UserController {
         try {
             const { data, otp } = await this.usersService.login(loginUserDto);
 
-            return res.status(HttpStatus.OK).json({
-                success: true,
-                statusCode: HttpStatus.OK,
-                message: 'User login successfully.',
-                otp,
-                email: data.email,
-            });
+            return new ApiResponse(HttpStatus.OK, 'User login successfully.', { otp, email: data.email }).sendResponse(
+                res,
+            );
         } catch (error) {
             throw new InternalServerErrorException(error.message);
         }
@@ -58,15 +39,10 @@ export class UserController {
         try {
             const { accessToken, refreshToken } = await this.usersService.verifyOtp(verifyOtpDto);
 
-            return res.status(HttpStatus.OK).json({
-                success: true,
-                statusCode: HttpStatus.OK,
-                message: 'User verified successfully.',
-                meta: {
-                    accessToken,
-                    refreshToken,
-                },
-            });
+            return new ApiResponse(HttpStatus.OK, 'User verified successfully.', {
+                accessToken,
+                refreshToken,
+            }).sendResponse(res);
         } catch (error) {
             throw new InternalServerErrorException(error.message);
         }
