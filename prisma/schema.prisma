@@ -76,19 +76,34 @@ model Store {
 }
 
 model Address {
-  id         Int      @unique @default(autoincrement())
-  userId     Int      @map("user_id")
-  storeId    Int      @map("store_id")
-  districtId Int      @map("district_id")
-  address    String   @db.Text
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @updatedAt @map("updated_at")
+  id        Int      @unique @default(autoincrement())
+  userId    Int      @map("user_id")
+  storeId   Int      @map("store_id")
+  villageId Int      @map("district_id")
+  address   String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  User  User  @relation(fields: [userId], references: [id])
-  Store Store @relation(fields: [storeId], references: [id])
+  User      User     @relation(fields: [userId], references: [id])
+  Store     Store?   @relation(fields: [storeId], references: [id])
+  Disctrict District @relation(fields: [villageId], references: [id])
 
-  @@index([userId, storeId, districtId])
+  @@index([userId, storeId, villageId])
   @@map("addresses")
+}
+
+model Village {
+  id         Int      @id @default(autoincrement())
+  uuid       String   @unique @default(uuid()) @db.Uuid
+  name       String
+  districtId Int      @map("district_id")
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+
+  District District @relation(fields: [districtId], references: [id])
+
+  @@index([districtId])
+  @@map("villages")
 }
 
 model District {
@@ -99,7 +114,9 @@ model District {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  City City @relation(fields: [cityId], references: [id])
+  City    City      @relation(fields: [cityId], references: [id])
+  Address Address[]
+  Village Village[]
 
   @@index([cityId])
   @@map("districts")

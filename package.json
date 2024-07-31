@@ -26,7 +26,8 @@
     "migrate:dev": "npx prisma migrate dev",
     "migrate:prod": "npx prisma migrate deploy",
     "migrate:reset": "npx prisma migrate reset --force",
-    "prepare": "husky"
+    "prepare": "husky",
+    "seed": "node ./dist/prisma/seeders/main.seeder.js"
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx}": [
@@ -62,6 +63,7 @@
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
+    "tsx": "^4.16.3",
     "twilio": "^5.2.2"
   },
   "devDependencies": {
