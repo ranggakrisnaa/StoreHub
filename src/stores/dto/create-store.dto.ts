@@ -15,5 +15,5 @@ export class CreateStoreDto {
 
     @IsNotEmpty()
     @IsNumber()
-    disctrictId: number;
+    villageId: number;
 }

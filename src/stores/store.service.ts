@@ -18,26 +18,42 @@ export class StoreService {
             },
         });
 
-        await this.createAddressStore(data.address, userId, data.disctrictId);
+        await this.createAddressStore(data.address, store.id, data.villageId);
 
         return store;
     }
 
-    async createAddressStore(address: string, userId: number, districtId: number): Promise<Address> {
+    async createAddressStore(address: string, storeId: number, villageId: number): Promise<Address> {
         return this.prisma.address.create({
             data: {
                 address,
-                User: { connect: { id: userId } },
-                Disctrict: { connect: { id: districtId } },
+                Store: { connect: { id: storeId } },
+                Village: { connect: { id: villageId } },
             },
         });
     }
+
     async getStore(where: Prisma.StoreWhereInput): Promise<Store | null> {
         return this.prisma.store.findFirst({ where });
     }
 
-    async updateStore(data: Prisma.StoreUpdateInput, where: Prisma.StoreWhereUniqueInput): Promise<Store> {
+    async getAddress(where: Prisma.AddressWhereInput): Promise<Address | null> {
+        return this.prisma.address.findFirst({ where });
+    }
+    async updateStore(params: { where: Prisma.StoreWhereUniqueInput; data: Prisma.StoreUpdateInput }): Promise<Store> {
+        const { data, where } = params;
         return this.prisma.store.update({
+            data,
+            where,
+        });
+    }
+
+    async updateAddressStore(params: {
+        where: Prisma.AddressWhereUniqueInput;
+        data: Prisma.AddressUpdateInput;
+    }): Promise<Address> {
+        const { data, where } = params;
+        return this.prisma.address.update({
             data,
             where,
         });

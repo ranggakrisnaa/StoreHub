@@ -29,3 +29,19 @@ ALTER TABLE "addresses" ADD CONSTRAINT "addresses_user_id_fkey" FOREIGN KEY ("us
 
 -- AddForeignKey
 ALTER TABLE "addresses" ADD CONSTRAINT "addresses_store_id_fkey" FOREIGN KEY ("store_id") REFERENCES "stores"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- DropIndex
+DROP INDEX "addresses_user_id_store_id_idx";
+
+-- CreateIndex
+CREATE INDEX "addresses_user_id_store_id_district_id_idx" ON "addresses"("user_id", "store_id", "district_id");
+
+-- AddForeignKey
+ALTER TABLE "addresses" ADD CONSTRAINT "addresses_district_id_fkey" FOREIGN KEY ("district_id") REFERENCES "districts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+
+-- DropForeignKey
+ALTER TABLE "addresses" DROP CONSTRAINT "addresses_district_id_fkey";
+
+-- AddForeignKey
+ALTER TABLE "addresses" ADD CONSTRAINT "addresses_district_id_fkey" FOREIGN KEY ("district_id") REFERENCES "villages"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

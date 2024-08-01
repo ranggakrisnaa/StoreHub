@@ -84,9 +84,9 @@ model Address {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  User      User     @relation(fields: [userId], references: [id])
-  Store     Store?   @relation(fields: [storeId], references: [id])
-  Disctrict District @relation(fields: [villageId], references: [id])
+  User    User?   @relation(fields: [userId], references: [id])
+  Store   Store?  @relation(fields: [storeId], references: [id])
+  Village Village @relation(fields: [villageId], references: [id])
 
   @@index([userId, storeId, villageId])
   @@map("addresses")
@@ -100,7 +100,8 @@ model Village {
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
 
-  District District @relation(fields: [districtId], references: [id])
+  District District  @relation(fields: [districtId], references: [id])
+  Address  Address[]
 
   @@index([districtId])
   @@map("villages")
@@ -115,7 +116,6 @@ model District {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   City    City      @relation(fields: [cityId], references: [id])
-  Address Address[]
   Village Village[]
 
   @@index([cityId])
