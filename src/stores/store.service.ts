@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Address, Prisma, Store } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
 import { CreateStoreDto } from './dto/create-store.dto';
+import { UpdateStoreDto } from './dto/update-store.dto';
 
 @Injectable()
 export class StoreService {
@@ -37,15 +38,30 @@ export class StoreService {
         return this.prisma.store.findFirst({ where });
     }
 
+    async getAllStore(where: Prisma.StoreWhereInput): Promise<Store[] | null> {
+        return this.prisma.store.findMany({ where });
+    }
+
     async getAddress(where: Prisma.AddressWhereInput): Promise<Address | null> {
         return this.prisma.address.findFirst({ where });
     }
-    async updateStore(params: { where: Prisma.StoreWhereUniqueInput; data: Prisma.StoreUpdateInput }): Promise<Store> {
-        const { data, where } = params;
-        return this.prisma.store.update({
+
+    async updateStore(data: UpdateStoreDto, storeId: number): Promise<Store> {
+        const foundStore = await this.getStore({ id: storeId });
+        const store = this.prisma.store.update({
             data,
-            where,
+            where: {
+                id: foundStore.id,
+            },
         });
+
+        const foundAddress = await this.getAddress({ storeId: foundStore.id });
+        await this.updateAddressStore({
+            data: { address: data.address, Village: { connect: { id: data.villageId } } },
+            where: { id: foundAddress.id },
+        });
+
+        return store;
     }
 
     async updateAddressStore(params: {

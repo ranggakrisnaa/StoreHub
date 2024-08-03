@@ -1,8 +1,10 @@
 import {
     Body,
     Controller,
+    Get,
     HttpStatus,
     InternalServerErrorException,
+    Param,
     Post,
     Put,
     Req,
@@ -38,27 +40,43 @@ export class StoreController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Put()
+    @Get()
+    async getAllStore(@Res() res: Response, @Request() req: Record<any, any>): Promise<Record<string, any>> {
+        try {
+            const data = await this.storeService.getAllStore({ userId: req.user.id });
+
+            return new ApiResponse(HttpStatus.CREATED, 'Store data retrieved successfully.', data).sendResponse(res);
+        } catch (error) {
+            throw new InternalServerErrorException(error.message);
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get(':id')
+    async getStore(
+        @Param('id') id: number,
+        @Res() res: Response,
+        @Request() req: Record<any, any>,
+    ): Promise<Record<string, any>> {
+        try {
+            const data = await this.storeService.getStore({ id });
+
+            return new ApiResponse(HttpStatus.CREATED, 'Store data retrieved successfully.', data).sendResponse(res);
+        } catch (error) {
+            throw new InternalServerErrorException(error.message);
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Put(':id')
     async updateStore(
         @Body() updateStoreDto: UpdateStoreDto,
         @Request() req: Record<any, any>,
         @Res() res: Response,
+        @Param('id') id: number,
     ): Promise<Record<string, any>> {
         try {
-            const foundStore = await this.storeService.getStore({ userId: req.user.id });
-            await this.storeService.updateStore({
-                data: {
-                    name: updateStoreDto.name || foundStore.name,
-                    description: updateStoreDto.description || foundStore.description,
-                },
-                where: { id: foundStore.id },
-            });
-
-            const foundAddress = await this.storeService.getAddress({ storeId: foundStore.id });
-            await this.storeService.updateAddressStore({
-                data: { address: updateStoreDto.address, Village: { connect: { id: updateStoreDto.villageId } } },
-                where: { id: foundAddress.id },
-            });
+            await this.storeService.updateStore(updateStoreDto, id);
 
             return new ApiResponse(HttpStatus.OK, 'Store updated successfully.').sendResponse(res);
         } catch (error) {
