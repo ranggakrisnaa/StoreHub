@@ -10,9 +10,9 @@ import { Otp, Prisma } from '@prisma/client';
 export class OtpService {
     private readonly twilioClient: Twilio;
     private readonly transporter: any;
-    private otpThrottleLimit: number = 1;
-    private otpTryDailyLimit: number = 5;
-    private otpExpiredTime: number = 5;
+    private otpThrottleLimit: number = parseInt(process.env.OTP_THROTTLE_LIMIT);
+    private otpTryDailyLimit: number = parseInt(process.env.OTP_TRY_DAYLY_LIMIT);
+    private otpExpiredTime: number = parseInt(process.env.OTP_EXPIRED_AT);
 
     constructor(
         private readonly configService: ConfigService,

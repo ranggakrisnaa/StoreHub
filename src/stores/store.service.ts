@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Address, Prisma, Store } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
 import { CreateStoreDto } from './dto/create-store.dto';
@@ -48,18 +48,29 @@ export class StoreService {
 
     async updateStore(data: UpdateStoreDto, storeId: number): Promise<Store> {
         const foundStore = await this.getStore({ id: storeId });
-        const store = this.prisma.store.update({
-            data,
+        if (!foundStore) throw new NotFoundException('User store is not found.');
+
+        const { address, villageId, ...storeData } = data;
+
+        const store = await this.prisma.store.update({
+            data: storeData,
             where: {
                 id: foundStore.id,
             },
         });
 
-        const foundAddress = await this.getAddress({ storeId: foundStore.id });
-        await this.updateAddressStore({
-            data: { address: data.address, Village: { connect: { id: data.villageId } } },
-            where: { id: foundAddress.id },
-        });
+        if (address) {
+            const foundAddress = await this.getAddress({ storeId: foundStore.id });
+            if (!foundAddress) throw new NotFoundException('User address store is not found.');
+
+            await this.updateAddressStore({
+                data: {
+                    address,
+                    Village: { connect: { id: villageId } },
+                },
+                where: { id: foundAddress.id },
+            });
+        }
 
         return store;
     }

@@ -1,4 +1,10 @@
-import { Injectable, BadRequestException, UnauthorizedException, NotFoundException } from '@nestjs/common';
+import {
+    Injectable,
+    BadRequestException,
+    UnauthorizedException,
+    NotFoundException,
+    ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { Otp, Prisma, Token, User } from '@prisma/client';
 import { JwtPayload } from 'src/auth/interface/jwt.inteface';
@@ -8,14 +14,20 @@ import { BcryptService } from 'src/bcrypt/bcrypt.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { OtpService } from 'src/otps/otp.service';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { TokenService } from 'src/tokens/token.service';
 
 @Injectable()
 export class UserService {
     constructor(
         private prisma: PrismaService,
-        private readonly jwtService: JwtStrategy,
+        private readonly jwtStrategy: JwtStrategy,
         private readonly bcryptService: BcryptService,
         private readonly otpService: OtpService,
+        private readonly configService: ConfigService,
+        private readonly jwtService: JwtService,
+        private readonly tokenService: TokenService,
     ) {}
 
     async register(dataInput: CreateUserDto): Promise<User> {
@@ -94,12 +106,12 @@ export class UserService {
 
     async generateAccessToken(data: User): Promise<string> {
         const payload: JwtPayload = { userId: data.id, email: data.email };
-        return this.jwtService.signAccessToken(payload);
+        return this.jwtStrategy.signAccessToken(payload);
     }
 
     async generateRefreshToken(data: User): Promise<string> {
         const payload: JwtPayload = { userId: data.id, email: data.email };
-        return this.jwtService.signRefreshToken(payload);
+        return this.jwtStrategy.signRefreshToken(payload);
     }
 
     async saveToken(data: Prisma.TokenCreateWithoutUserInput, userId: number): Promise<Token> {
@@ -113,5 +125,22 @@ export class UserService {
                 },
             },
         });
+    }
+
+    async refresh(refreshToken: string): Promise<Token> {
+        const decoded = await this.jwtService.verifyAsync(refreshToken, {
+            secret: this.configService.get('JWT_SECRET'),
+        });
+        if (!decoded) throw new ForbiddenException('Unauthenticated User.');
+
+        const foundUser = await this.findUser({ id: decoded.userId });
+        if (!foundUser) throw new ForbiddenException('Unauthenticated User.');
+
+        const foundToken = await this.tokenService.findToken({ refreshToken, userId: foundUser.id });
+        const accessToken = await this.generateAccessToken(foundUser);
+
+        return await this.tokenService.updateToken(foundToken.id, accessToken);
+
+        // await this.updateToken({ data: { refreshToken }, where: { id: findRefreshToken.id } })
     }
 }

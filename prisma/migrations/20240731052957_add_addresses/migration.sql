@@ -45,3 +45,19 @@ ALTER TABLE "addresses" DROP CONSTRAINT "addresses_district_id_fkey";
 
 -- AddForeignKey
 ALTER TABLE "addresses" ADD CONSTRAINT "addresses_district_id_fkey" FOREIGN KEY ("district_id") REFERENCES "villages"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- DropForeignKey
+ALTER TABLE "addresses" DROP CONSTRAINT "addresses_store_id_fkey";
+
+-- DropForeignKey
+ALTER TABLE "addresses" DROP CONSTRAINT "addresses_user_id_fkey";
+
+-- AlterTable
+ALTER TABLE "addresses" ALTER COLUMN "user_id" DROP NOT NULL,
+ALTER COLUMN "store_id" DROP NOT NULL;
+
+-- AddForeignKey
+ALTER TABLE "addresses" ADD CONSTRAINT "addresses_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "addresses" ADD CONSTRAINT "addresses_store_id_fkey" FOREIGN KEY ("store_id") REFERENCES "stores"("id") ON DELETE SET NULL ON UPDATE CASCADE;

@@ -45,7 +45,7 @@ export class StoreController {
         try {
             const data = await this.storeService.getAllStore({ userId: req.user.id });
 
-            return new ApiResponse(HttpStatus.CREATED, 'Store data retrieved successfully.', data).sendResponse(res);
+            return new ApiResponse(HttpStatus.OK, 'Store data retrieved successfully.', data).sendResponse(res);
         } catch (error) {
             throw new InternalServerErrorException(error.message);
         }
@@ -73,10 +73,10 @@ export class StoreController {
         @Body() updateStoreDto: UpdateStoreDto,
         @Request() req: Record<any, any>,
         @Res() res: Response,
-        @Param('id') id: number,
+        @Param('id') id: string,
     ): Promise<Record<string, any>> {
         try {
-            await this.storeService.updateStore(updateStoreDto, id);
+            await this.storeService.updateStore(updateStoreDto, +id);
 
             return new ApiResponse(HttpStatus.OK, 'Store updated successfully.').sendResponse(res);
         } catch (error) {

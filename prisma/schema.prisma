@@ -14,19 +14,20 @@ datasource db {
 }
 
 model User {
-  id        Int       @unique @default(autoincrement())
-  uuid      String    @default(uuid()) @db.Uuid
-  name      String    @db.VarChar(200)
-  username  String    @unique @db.VarChar(100)
-  email     String    @unique @db.VarChar(200)
-  password  String    @db.VarChar(100)
-  role      Role      @default(USER)
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  Token     Token[]
-  Otp       Otp[]
-  Store     Store[]
-  Address   Address[]
+  id        Int      @unique @default(autoincrement())
+  uuid      String   @default(uuid()) @db.Uuid
+  name      String   @db.VarChar(200)
+  username  String   @unique @db.VarChar(100)
+  email     String   @unique @db.VarChar(200)
+  password  String   @db.VarChar(100)
+  role      Role     @default(USER)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  Token   Token[]
+  Otp     Otp[]
+  Store   Store[]
+  Address Address[]
 
   @@map("users")
 }
@@ -77,8 +78,8 @@ model Store {
 
 model Address {
   id        Int      @unique @default(autoincrement())
-  userId    Int      @map("user_id")
-  storeId   Int      @map("store_id")
+  userId    Int?     @map("user_id")
+  storeId   Int?     @map("store_id")
   villageId Int      @map("district_id")
   address   String   @db.Text
   createdAt DateTime @default(now()) @map("created_at")
@@ -143,7 +144,8 @@ model Province {
   name      String   @db.VarChar(100)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-  City      City[]
+
+  City City[]
 
   @@map("provinces")
 }
