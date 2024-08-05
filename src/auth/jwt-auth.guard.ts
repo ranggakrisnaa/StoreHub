@@ -39,8 +39,8 @@ export class JwtAuthGuard implements CanActivate {
             const foundUser: Prisma.UserGetPayload<{}> = await this.userService.findUser({ email: decoded.email });
             if (!foundUser) throw new ForbiddenException('Unauthenticated User.');
 
-            request.user = foundUser;
-            request.token = foundToken;
+            request.body.user = foundUser;
+            request.body.token = foundToken;
 
             return true;
         } catch (error) {

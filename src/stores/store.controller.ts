@@ -53,11 +53,7 @@ export class StoreController {
 
     @UseGuards(JwtAuthGuard)
     @Get(':id')
-    async getStore(
-        @Param('id') id: number,
-        @Res() res: Response,
-        @Request() req: Record<any, any>,
-    ): Promise<Record<string, any>> {
+    async getStore(@Param('id') id: number, @Res() res: Response): Promise<Record<string, any>> {
         try {
             const data = await this.storeService.getStore({ id });
 
@@ -71,7 +67,6 @@ export class StoreController {
     @Put(':id')
     async updateStore(
         @Body() updateStoreDto: UpdateStoreDto,
-        @Request() req: Record<any, any>,
         @Res() res: Response,
         @Param('id') id: string,
     ): Promise<Record<string, any>> {

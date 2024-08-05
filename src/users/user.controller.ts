@@ -5,7 +5,8 @@ import {
     InternalServerErrorException,
     Res,
     HttpStatus,
-    ForbiddenException,
+    Request,
+    UseGuards,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/register-user.dto';
 import { Response } from 'express';
@@ -13,14 +14,11 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { UserService } from './user.service';
 import { ApiResponse } from 'src/api-response.dto';
-import { TokenService } from 'src/tokens/token.service';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('v1/users')
 export class UserController {
-    constructor(
-        private readonly usersService: UserService,
-        private readonly tokenService: TokenService,
-    ) {}
+    constructor(private readonly usersService: UserService) {}
 
     @Post('register')
     async register(@Body() createUserDto: CreateUserDto, @Res() res: Response): Promise<Record<string, any>> {
@@ -61,12 +59,29 @@ export class UserController {
     }
 
     @Post('refresh')
-    async refresh(@Body() data: Record<any, any>, @Res() res: Response) {
+    async refresh(@Body() data: Record<any, any>, @Res() res: Response): Promise<Record<string, any>> {
         try {
-            const { refreshToken } = data;
-            await this.usersService.refresh(refreshToken);
+            const token = await this.usersService.refresh(data.refreshToken);
 
-            return new ApiResponse(HttpStatus.OK, 'Token Refreshed successfully.', refreshToken).sendResponse(res);
+            return new ApiResponse(HttpStatus.OK, 'Token Refreshed successfully.', token).sendResponse(res);
+        } catch (error) {
+            throw new InternalServerErrorException(error.message);
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('/logout')
+    async logout(
+        @Body() data: Record<any, any>,
+        @Res() res: Response,
+        @Request() req: Record<any, any>,
+    ): Promise<Record<string, any>> {
+        try {
+            console.log(req.body);
+
+            await this.usersService.logout(req.body);
+
+            return new ApiResponse(HttpStatus.OK, 'User logout successfully.').sendResponse(res);
         } catch (error) {
             throw new InternalServerErrorException(error.message);
         }

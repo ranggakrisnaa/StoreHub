@@ -101,7 +101,11 @@ export class UserService {
     }
 
     async findOneByEmailOrUsername(usernameOrEmail: string): Promise<User | null> {
-        return await this.prisma.user.findFirst();
+        return await this.prisma.user.findFirst({
+            where: {
+                OR: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
+            },
+        });
     }
 
     async generateAccessToken(data: User): Promise<string> {
@@ -127,7 +131,7 @@ export class UserService {
         });
     }
 
-    async refresh(refreshToken: string): Promise<Token> {
+    async refresh(refreshToken: string): Promise<string> {
         const decoded = await this.jwtService.verifyAsync(refreshToken, {
             secret: this.configService.get('JWT_SECRET'),
         });
@@ -139,8 +143,19 @@ export class UserService {
         const foundToken = await this.tokenService.findToken({ refreshToken, userId: foundUser.id });
         const accessToken = await this.generateAccessToken(foundUser);
 
-        return await this.tokenService.updateToken(foundToken.id, accessToken);
+        await this.tokenService.updateToken(foundToken.id, accessToken);
 
-        // await this.updateToken({ data: { refreshToken }, where: { id: findRefreshToken.id } })
+        return accessToken;
+    }
+
+    async logout(data: Record<any, any>): Promise<Token> {
+        const { user, token } = data;
+        console.log({ token: token.accessToken });
+
+        const foundTokenDB = await this.tokenService.findToken({ userId: user.id, accessToken: token.accessToken });
+        console.log({ foundTokenDB });
+        if (!foundTokenDB) throw new NotFoundException('Token user is not found.');
+
+        return await this.tokenService.deleteToken({ id: foundTokenDB.id });
     }
 }
