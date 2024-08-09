@@ -71,6 +71,7 @@ model Store {
 
   User    User      @relation(fields: [userId], references: [id])
   Address Address[]
+  Product Product[]
 
   @@index([userId])
   @@map("stores")
@@ -148,6 +149,35 @@ model Province {
   City City[]
 
   @@map("provinces")
+}
+
+model Product {
+  id                Int      @unique @default(autoincrement())
+  storeId           Int      @map("store_id")
+  productCategoryId Int?     @map("product_category_id")
+  name              String
+  quantity          Int
+  description       String   @db.Text
+  SKU               String
+  price             Float    @db.DoublePrecision
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  Store             Store              @relation(fields: [storeId], references: [id])
+  ProductCategories ProductCategories? @relation(fields: [productCategoryId], references: [id])
+
+  @@map("products")
+}
+
+model ProductCategories {
+  id        Int      @unique @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  Product Product[]
+
+  @@map("product_categories")
 }
 
 enum Role {
