@@ -1,8 +1,8 @@
-import { PrismaService } from 'src/prisma.service';
 import { default as provinces } from '../../public/data/provinces.json';
 import { default as cities } from '../../public/data/cities.json';
 import { default as districts } from '../../public/data/districts.json';
 import { default as villages } from '../../public/data/villages.json';
+import { PrismaService } from '../../src/prisma.service';
 
 export default class Region {
     constructor(private readonly prisma?: PrismaService) {}

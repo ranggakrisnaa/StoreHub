@@ -3,8 +3,8 @@ import { generate } from 'otp-generator';
 import { ConfigService } from '@nestjs/config';
 import { Twilio } from 'twilio';
 import { createTransport } from 'nodemailer';
-import { PrismaService } from 'src/prisma.service';
 import { Otp, Prisma } from '@prisma/client';
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class OtpService {

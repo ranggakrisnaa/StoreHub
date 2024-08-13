@@ -8,7 +8,6 @@ import { OtpModule } from './otps/otp.module';
 import { ConfigModule } from '@nestjs/config';
 import { TokenModule } from './tokens/token.module';
 import { StoreModule } from './stores/store.module';
-import { ProductController } from './products/product.controller';
 import { ProductModule } from './products/product.module';
 import otpConfig from './otps/otp.config';
 
