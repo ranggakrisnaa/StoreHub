@@ -5,18 +5,18 @@ import {
     NotFoundException,
     ForbiddenException,
 } from '@nestjs/common';
-import { PrismaService } from 'src/prisma.service';
-import { Otp, Prisma, Token, User } from '@prisma/client';
-import { JwtPayload } from 'src/auth/interface/jwt.inteface';
-import { JwtStrategy } from 'src/auth/jwt.strategy';
+import { Prisma, Token, User } from '@prisma/client';
 import { CreateUserDto } from './dto/register-user.dto';
-import { BcryptService } from 'src/bcrypt/bcrypt.service';
 import { LoginUserDto } from './dto/login-user.dto';
-import { OtpService } from 'src/otps/otp.service';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { TokenService } from 'src/tokens/token.service';
+import { PrismaService } from '../prisma.service';
+import { JwtStrategy } from '../auth/jwt.strategy';
+import { BcryptService } from '../bcrypt/bcrypt.service';
+import { OtpService } from '../otps/otp.service';
+import { TokenService } from '../tokens/token.service';
+import { JwtPayload } from '../auth/interface/jwt.inteface';
 
 @Injectable()
 export class UserService {

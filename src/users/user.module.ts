@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { UserService } from './user.service';
-import { PrismaService } from 'src/prisma.service';
-import { BcryptService } from 'src/bcrypt/bcrypt.service';
-import { JwtStrategy } from 'src/auth/jwt.strategy';
-import { OtpService } from 'src/otps/otp.service';
 import { UserController } from './user.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { TokenService } from 'src/tokens/token.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtStrategy } from '../auth/jwt.strategy';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { TokenService } from '../tokens/token.service';
+import { PrismaService } from '../prisma.service';
+import { BcryptService } from '../bcrypt/bcrypt.service';
+import { OtpService } from '../otps/otp.service';
 
 @Module({
     imports: [

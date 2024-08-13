@@ -15,9 +15,9 @@ import {
 import { StoreService } from './store.service';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { ApiResponse } from 'src/api-response.dto';
 import { Response } from 'express';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ApiResponse } from '../api-response.dto';
 
 @Controller('v1/stores')
 export class StoreController {
