@@ -29,7 +29,7 @@ export class TokenService {
         });
     }
 
-    async deleteToken(where: Prisma.TokenWhereUniqueInput): Promise<Token> {
-        return this.prisma.token.delete({ where });
+    async deleteToken(where: Prisma.TokenWhereInput): Promise<Prisma.BatchPayload> {
+        return this.prisma.token.deleteMany({ where });
     }
 }

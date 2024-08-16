@@ -77,8 +77,6 @@ export class UserController {
         @Request() req: Record<any, any>,
     ): Promise<Record<string, any>> {
         try {
-            console.log(req.body);
-
             await this.usersService.logout(req.body);
 
             return new ApiResponse(HttpStatus.OK, 'User logout successfully.').sendResponse(res);

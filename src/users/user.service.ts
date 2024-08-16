@@ -148,14 +148,12 @@ export class UserService {
         return accessToken;
     }
 
-    async logout(data: Record<any, any>): Promise<Token> {
+    async logout(data: Record<any, any>): Promise<Prisma.BatchPayload> {
         const { user, token } = data;
-        console.log({ token: token.accessToken });
 
         const foundTokenDB = await this.tokenService.findToken({ userId: user.id, accessToken: token.accessToken });
-        console.log({ foundTokenDB });
         if (!foundTokenDB) throw new NotFoundException('Token user is not found.');
 
-        return await this.tokenService.deleteToken({ id: foundTokenDB.id });
+        return await this.tokenService.deleteToken({ userId: foundTokenDB.userId });
     }
 }
