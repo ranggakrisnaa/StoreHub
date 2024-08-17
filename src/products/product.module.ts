@@ -8,6 +8,7 @@ import { UserService } from '../users/user.service';
 import { JwtStrategy } from '../auth/jwt.strategy';
 import { BcryptService } from '../bcrypt/bcrypt.service';
 import { OtpService } from '../otps/otp.service';
+import { SupabaseService } from 'src/supabases/supabase.service';
 @Module({
     controllers: [ProductController],
     providers: [
@@ -19,6 +20,7 @@ import { OtpService } from '../otps/otp.service';
         JwtStrategy,
         BcryptService,
         OtpService,
+        SupabaseService,
     ],
 })
 export class ProductModule {}

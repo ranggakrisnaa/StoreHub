@@ -27,7 +27,7 @@ export class UserController {
 
             return new ApiResponse(HttpStatus.CREATED, 'User created successfully.', data).sendResponse(res);
         } catch (error) {
-            throw new InternalServerErrorException(error.message);
+            throw error;
         }
     }
 
@@ -40,7 +40,7 @@ export class UserController {
                 res,
             );
         } catch (error) {
-            throw new InternalServerErrorException(error.message);
+            throw error;
         }
     }
 
@@ -54,7 +54,7 @@ export class UserController {
                 refreshToken,
             }).sendResponse(res);
         } catch (error) {
-            throw new InternalServerErrorException(error.message);
+            throw error;
         }
     }
 
@@ -65,7 +65,7 @@ export class UserController {
 
             return new ApiResponse(HttpStatus.OK, 'Token Refreshed successfully.', token).sendResponse(res);
         } catch (error) {
-            throw new InternalServerErrorException(error.message);
+            throw error;
         }
     }
 
@@ -81,7 +81,7 @@ export class UserController {
 
             return new ApiResponse(HttpStatus.OK, 'User logout successfully.').sendResponse(res);
         } catch (error) {
-            throw new InternalServerErrorException(error.message);
+            throw error;
         }
     }
 }

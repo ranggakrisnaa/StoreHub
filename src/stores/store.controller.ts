@@ -7,7 +7,6 @@ import {
     Param,
     Post,
     Put,
-    Req,
     Request,
     Res,
     UseGuards,
@@ -31,11 +30,11 @@ export class StoreController {
         @Res() res: Response,
     ): Promise<Record<string, any>> {
         try {
-            await this.storeService.createStore(createStoreDto, req.user.id);
+            await this.storeService.createStore(createStoreDto, +req.body.user.id);
 
             return new ApiResponse(HttpStatus.CREATED, 'Store created successfully.').sendResponse(res);
         } catch (error) {
-            throw new InternalServerErrorException(error.message);
+            throw error;
         }
     }
 
@@ -47,7 +46,7 @@ export class StoreController {
 
             return new ApiResponse(HttpStatus.OK, 'Store data retrieved successfully.', data).sendResponse(res);
         } catch (error) {
-            throw new InternalServerErrorException(error.message);
+            throw error;
         }
     }
 
@@ -59,7 +58,7 @@ export class StoreController {
 
             return new ApiResponse(HttpStatus.CREATED, 'Store data retrieved successfully.', data).sendResponse(res);
         } catch (error) {
-            throw new InternalServerErrorException(error.message);
+            throw error;
         }
     }
 
@@ -75,7 +74,7 @@ export class StoreController {
 
             return new ApiResponse(HttpStatus.OK, 'Store updated successfully.').sendResponse(res);
         } catch (error) {
-            throw new InternalServerErrorException(error.message);
+            throw error;
         }
     }
 }

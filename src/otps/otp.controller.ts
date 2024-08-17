@@ -16,11 +16,7 @@ export class OtpController {
                 message: 'OTP sent to phone number.',
             });
         } catch (error) {
-            if (error !== InternalServerErrorException) {
-                throw error;
-            } else {
-                throw new InternalServerErrorException(error.message);
-            }
+            throw error;
         }
     }
 
@@ -34,11 +30,7 @@ export class OtpController {
                 message: 'OTP sent to email address.',
             });
         } catch (error) {
-            if (error !== InternalServerErrorException) {
-                throw error;
-            } else {
-                throw new InternalServerErrorException(error.message);
-            }
+            throw error;
         }
     }
 }

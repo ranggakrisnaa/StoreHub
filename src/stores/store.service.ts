@@ -9,6 +9,11 @@ export class StoreService {
     constructor(private readonly prisma: PrismaService) {}
 
     async createStore(data: CreateStoreDto, userId: number): Promise<Store> {
+        const foundVillage = await this.prisma.village.findFirst({
+            where: { id: data?.villageId },
+        });
+
+        if (!foundVillage) throw new NotFoundException('village data is not found.');
         const store = await this.prisma.store.create({
             data: {
                 name: data.name,
