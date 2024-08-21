@@ -10,6 +10,7 @@ import { TokenModule } from './tokens/token.module';
 import { StoreModule } from './stores/store.module';
 import { ProductModule } from './products/product.module';
 import { SupabaseModule } from './supabases/supabase.module';
+import { RegionModule } from './regions/region.module';
 import otpConfig from './otps/otp.config';
 
 @Module({
@@ -26,6 +27,7 @@ import otpConfig from './otps/otp.config';
         StoreModule,
         ProductModule,
         SupabaseModule,
+        RegionModule,
     ],
     controllers: [AppController],
     providers: [AppService],

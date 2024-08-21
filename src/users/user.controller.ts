@@ -61,9 +61,9 @@ export class UserController {
     @Post('refresh')
     async refresh(@Body() data: Record<any, any>, @Res() res: Response): Promise<Record<string, any>> {
         try {
-            const token = await this.usersService.refresh(data.refreshToken);
+            const accessToken = await this.usersService.refresh(data.refreshToken);
 
-            return new ApiResponse(HttpStatus.OK, 'Token Refreshed successfully.', token).sendResponse(res);
+            return new ApiResponse(HttpStatus.OK, 'Token Refreshed successfully.', { accessToken }).sendResponse(res);
         } catch (error) {
             throw error;
         }

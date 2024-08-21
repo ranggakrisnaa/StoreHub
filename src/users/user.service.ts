@@ -132,17 +132,15 @@ export class UserService {
     }
 
     async refresh(refreshToken: string): Promise<string> {
-        const decoded = await this.jwtService.verifyAsync(refreshToken, {
-            secret: this.configService.get('JWT_SECRET'),
-        });
-        if (!decoded) throw new ForbiddenException('Unauthenticated User.');
+        const decoded = await this.tokenService.verify(refreshToken);
 
         const foundUser = await this.findUser({ id: decoded.userId });
         if (!foundUser) throw new ForbiddenException('Unauthenticated User.');
 
         const foundToken = await this.tokenService.findToken({ refreshToken, userId: foundUser.id });
-        const accessToken = await this.generateAccessToken(foundUser);
+        if (!foundToken) throw new ForbiddenException('Unauthenticated User.');
 
+        const accessToken = await this.generateAccessToken(foundUser);
         await this.tokenService.updateToken(foundToken.id, accessToken);
 
         return accessToken;
