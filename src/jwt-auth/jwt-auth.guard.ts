@@ -10,8 +10,8 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Prisma } from '@prisma/client';
 import { JwtPayload } from 'jsonwebtoken';
-import { TokenService } from '../tokens/token.service';
-import { UserService } from '../users/user.service';
+import { TokenService } from '../token/token.service';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {

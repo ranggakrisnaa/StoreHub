@@ -4,12 +4,12 @@ import { UserController } from './user.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtStrategy } from '../auth/jwt.strategy';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { TokenService } from '../tokens/token.service';
+import { JwtStrategy } from '../jwt-auth/jwt.strategy';
+import { JwtAuthGuard } from '../jwt-auth/jwt-auth.guard';
+import { TokenService } from '../token/token.service';
 import { PrismaService } from '../prisma.service';
 import { BcryptService } from '../bcrypt/bcrypt.service';
-import { OtpService } from '../otps/otp.service';
+import { OtpService } from '../otp/otp.service';
 
 @Module({
     imports: [

@@ -12,11 +12,11 @@ import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma.service';
-import { JwtStrategy } from '../auth/jwt.strategy';
+import { JwtStrategy } from '../jwt-auth/jwt.strategy';
 import { BcryptService } from '../bcrypt/bcrypt.service';
-import { OtpService } from '../otps/otp.service';
-import { TokenService } from '../tokens/token.service';
-import { JwtPayload } from '../auth/interface/jwt.inteface';
+import { OtpService } from '../otp/otp.service';
+import { TokenService } from '../token/token.service';
+import { JwtPayload } from '../jwt-auth/interface/jwt.inteface';
 
 @Injectable()
 export class UserService {

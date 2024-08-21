@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { SupabaseService } from 'src/supabases/supabase.service';
+import { SupabaseService } from 'src/supabase/supabase.service';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateProductDto } from './dto/create-product.dto';
 

@@ -14,7 +14,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { UserService } from './user.service';
 import { ApiResponse } from '../api-response.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../jwt-auth/jwt-auth.guard';
 
 @Controller('v1/users')
 export class UserController {

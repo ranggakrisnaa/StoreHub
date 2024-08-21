@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ProductController } from './product.controller';
-import { TokenService } from '../tokens/token.service';
+import { TokenService } from '../token/token.service';
 import { PrismaService } from '../prisma.service';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { UserService } from '../users/user.service';
-import { JwtStrategy } from '../auth/jwt.strategy';
+import { JwtAuthGuard } from '../jwt-auth/jwt-auth.guard';
+import { UserService } from '../user/user.service';
+import { JwtStrategy } from '../jwt-auth/jwt.strategy';
 import { BcryptService } from '../bcrypt/bcrypt.service';
-import { OtpService } from '../otps/otp.service';
-import { SupabaseService } from 'src/supabases/supabase.service';
+import { OtpService } from '../otp/otp.service';
+import { SupabaseService } from 'src/supabase/supabase.service';
 @Module({
     controllers: [ProductController],
     providers: [

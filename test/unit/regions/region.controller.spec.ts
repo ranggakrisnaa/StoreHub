@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { RegionController } from '../../../src/regions/region.controller';
-import { RegionService } from '../../../src/regions/region.service';
+import { RegionController } from '../../../src/region/region.controller';
+import { RegionService } from '../../../src/region/region.service';
 
 describe('RegionController', () => {
     let controller: RegionController;

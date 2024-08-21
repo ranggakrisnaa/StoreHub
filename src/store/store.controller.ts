@@ -3,7 +3,7 @@ import { StoreService } from './store.service';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
 import { Response } from 'express';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../jwt-auth/jwt-auth.guard';
 import { ApiResponse } from '../api-response.dto';
 
 @Controller('v1/stores')
