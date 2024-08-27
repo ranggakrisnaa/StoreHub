@@ -1,11 +1,4 @@
-import {
-    Injectable,
-    CanActivate,
-    ExecutionContext,
-    ForbiddenException,
-    InternalServerErrorException,
-    UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Prisma } from '@prisma/client';

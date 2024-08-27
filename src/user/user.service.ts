@@ -9,8 +9,6 @@ import { Prisma, Token, User } from '@prisma/client';
 import { CreateUserDto } from './dto/register-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma.service';
 import { JwtStrategy } from '../jwt-auth/jwt.strategy';
 import { BcryptService } from '../bcrypt/bcrypt.service';
@@ -25,8 +23,6 @@ export class UserService {
         private readonly jwtStrategy: JwtStrategy,
         private readonly bcryptService: BcryptService,
         private readonly otpService: OtpService,
-        private readonly configService: ConfigService,
-        private readonly jwtService: JwtService,
         private readonly tokenService: TokenService,
     ) {}
 

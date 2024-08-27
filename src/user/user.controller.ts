@@ -1,13 +1,4 @@
-import {
-    Controller,
-    Post,
-    Body,
-    InternalServerErrorException,
-    Res,
-    HttpStatus,
-    Request,
-    UseGuards,
-} from '@nestjs/common';
+import { Controller, Post, Body, Res, HttpStatus, Request, UseGuards } from '@nestjs/common';
 import { CreateUserDto } from './dto/register-user.dto';
 import { Response } from 'express';
 import { LoginUserDto } from './dto/login-user.dto';

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Param, InternalServerErrorException, Res, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, Res, HttpStatus } from '@nestjs/common';
 import { OtpService } from './otp.service';
 import { Response } from 'express';
 
