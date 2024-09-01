@@ -1,6 +1,6 @@
 import { Controller, Get, HttpStatus, Res } from '@nestjs/common';
 import { AppService } from './app.service';
-import { ApiResponse } from './api-response.dto';
+import { ApiResponse } from './response/api-response.dto';
 
 @Controller()
 export class AppController {

@@ -4,7 +4,7 @@ import { Response } from 'express';
 import { LoginUserDto } from './dto/login-user.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { UserService } from './user.service';
-import { ApiResponse } from '../api-response.dto';
+import { ApiResponse } from '../response/api-response.dto';
 import { JwtAuthGuard } from '../jwt-auth/jwt-auth.guard';
 
 @Controller('v1/users')

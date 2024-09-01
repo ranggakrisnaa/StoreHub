@@ -27,8 +27,13 @@ export class UserService {
     ) {}
 
     async register(dataInput: CreateUserDto): Promise<User> {
-        const { email, name, username, role, password, confirmPassword } = dataInput;
-        if (password !== confirmPassword) throw new UnauthorizedException('Password is not match');
+        const { email, name, username, role = 'ADMIN', password, confirmPassword } = dataInput;
+
+        const checkUserEmailOrUsername = await this.findOneByEmailOrUsername(email || username);
+
+        if (checkUserEmailOrUsername) throw new BadRequestException('User already exist.');
+        if (password !== confirmPassword) throw new UnauthorizedException('Password is not match.');
+
         const hashPassword: string = await this.bcryptService.hashPassword(confirmPassword);
 
         return await this.createUser({
@@ -42,10 +47,12 @@ export class UserService {
 
     async login(dataInput: LoginUserDto): Promise<Record<string, any>> {
         const { usernameOrEmail, password } = dataInput;
+
         const data: Prisma.UserGetPayload<{}> = await this.findUser({
             OR: [{ email: usernameOrEmail }, { username: usernameOrEmail }],
         });
         if (!data) throw new NotFoundException('User name or email is not found.');
+
         const checkPassword: boolean = await this.bcryptService.comparePassword(password, data.password);
         if (!checkPassword) throw new BadRequestException('Password is invalid.');
 
@@ -59,6 +66,7 @@ export class UserService {
             otp: parseInt(otp),
             type: 'login',
         };
+
         await this.otpService.saveOtp(payload, data.id);
 
         return { data, otp };

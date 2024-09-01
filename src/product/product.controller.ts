@@ -17,7 +17,7 @@ import { Response } from 'express';
 import { CreateProductDto } from './dto/create-product.dto';
 import { JwtAuthGuard } from '../jwt-auth/jwt-auth.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { ApiResponse } from 'src/api-response.dto';
+import { ApiResponse } from 'src/response/api-response.dto';
 
 @Controller('v1/products')
 export class ProductController {

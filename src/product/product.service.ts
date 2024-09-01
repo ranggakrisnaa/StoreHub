@@ -29,7 +29,6 @@ export class ProductService {
                 storeId,
             },
         });
-        console.log(files);
 
         if (files && files.length > 0) {
             for (let i = 0; i < files.length; i++) {

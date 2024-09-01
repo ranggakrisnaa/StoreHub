@@ -14,12 +14,12 @@ export class CreateUserDto {
     @IsString()
     email: string;
 
+    @IsString()
+    role: 'USER' | 'ADMIN';
+
     @IsNotEmpty()
     @IsString()
     password: string;
-
-    @IsNotEmpty()
-    role: 'USER' | 'ADMIN';
 
     @IsNotEmpty()
     @IsString()

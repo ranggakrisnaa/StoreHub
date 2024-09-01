@@ -14,6 +14,7 @@ export class StoreService {
         });
 
         if (!foundVillage) throw new NotFoundException('village data is not found.');
+
         const store = await this.prisma.store.create({
             data: {
                 name: data.name,
