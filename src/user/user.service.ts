@@ -10,11 +10,13 @@ import { CreateUserDto } from './dto/register-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { PrismaService } from '../prisma.service';
-import { JwtStrategy } from '../jwt-auth/jwt.strategy';
+import { JwtStrategy } from '../auth/jwt.strategy';
 import { BcryptService } from '../bcrypt/bcrypt.service';
 import { OtpService } from '../otp/otp.service';
 import { TokenService } from '../token/token.service';
-import { JwtPayload } from '../jwt-auth/interface/jwt.inteface';
+import { JwtPayload } from '../auth/interface/jwt.inteface';
+import { ChangePasswordUserDto } from './dto/change-password-user.dto';
+import { FindUserByEmailDto } from './dto/find-user-by-email.dto';
 
 @Injectable()
 export class UserService {
@@ -157,5 +159,25 @@ export class UserService {
         if (!foundTokenDB) throw new NotFoundException('Token user is not found.');
 
         return await this.tokenService.deleteToken({ userId: foundTokenDB.userId });
+    }
+
+    async changePassword(data: ChangePasswordUserDto, userId: string): Promise<User> {
+        const { oldPassword, newPassword } = data;
+
+        const foundUser = await this.prisma.user.findFirst({ where: { uuid: userId } });
+        if (!foundUser) throw new NotFoundException('User is not found.');
+
+        const checkPassword = await this.bcryptService.comparePassword(oldPassword, foundUser.password);
+        if (!checkPassword) throw new BadRequestException('Password is not match.');
+
+        const hashPassword = await this.bcryptService.hashPassword(newPassword);
+        return await this.prisma.user.update({ where: { id: foundUser.id }, data: { password: hashPassword } });
+    }
+
+    async findUserByEmail(data: FindUserByEmailDto): Promise<string> {
+        const foundUser = await this.findUser({ email: data.email });
+        if (!foundUser) throw new NotFoundException('User is not found.');
+
+        return foundUser.uuid;
     }
 }

@@ -5,7 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma.service';
 import { OtpService } from '../otp/otp.service';
 import { BcryptService } from '../bcrypt/bcrypt.service';
-import { JwtStrategy } from '../jwt-auth/jwt.strategy';
+import { JwtStrategy } from '../auth/jwt.strategy';
 import { TokenService } from '../token/token.service';
 import { UserService } from '../user/user.service';
 

@@ -1,11 +1,23 @@
-import { Controller, Post, Body, Res, HttpStatus, Request, UseGuards } from '@nestjs/common';
+import {
+    Controller,
+    Post,
+    Body,
+    InternalServerErrorException,
+    Res,
+    HttpStatus,
+    Request,
+    UseGuards,
+    Param,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/register-user.dto';
 import { Response } from 'express';
 import { LoginUserDto } from './dto/login-user.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { UserService } from './user.service';
 import { ApiResponse } from '../response/api-response.dto';
-import { JwtAuthGuard } from '../jwt-auth/jwt-auth.guard';
+import { ChangePasswordUserDto } from './dto/change-password-user.dto';
+import { FindUserByEmailDto } from './dto/find-user-by-email.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('v1/users')
 export class UserController {
@@ -44,6 +56,34 @@ export class UserController {
                 accessToken,
                 refreshToken,
             }).sendResponse(res);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    @Post('find-user')
+    async findUserByEmail(@Body() findUserByEmailDto: FindUserByEmailDto, @Res() res: Response) {
+        try {
+            const data = await this.usersService.findUserByEmail(findUserByEmailDto);
+
+            return new ApiResponse(HttpStatus.OK, 'User verified successfully.', {
+                userId: data,
+            }).sendResponse(res);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    @Post('change-password/:userId')
+    async changePassword(
+        @Body() changePasswordDto: ChangePasswordUserDto,
+        @Res() res: Response,
+        @Param('userId') userId: string,
+    ): Promise<Record<string, any>> {
+        try {
+            const data = await this.usersService.changePassword(changePasswordDto, userId);
+
+            return new ApiResponse(HttpStatus.OK, 'User changed password successfully.', data).sendResponse(res);
         } catch (error) {
             throw error;
         }

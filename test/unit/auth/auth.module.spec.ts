@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { AuthModule } from '../../../src/jwt-auth/auth.module';
-import { JwtStrategy } from '../../../src/jwt-auth/jwt.strategy';
+import { AuthModule } from '../../../src/auth/auth.module';
+import { JwtStrategy } from '../../../src/auth/jwt.strategy';
 
 describe('AuthModule', () => {
     let module: TestingModule;
