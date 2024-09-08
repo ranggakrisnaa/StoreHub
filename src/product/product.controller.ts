@@ -32,13 +32,9 @@ export class ProductController {
         @Param('storeId') storeId: string,
         @Res() res: Response,
     ) {
-        try {
-            await this.productService.createProduct(createProductDto, files, +storeId);
+        await this.productService.createProduct(createProductDto, files, +storeId);
 
-            return new ApiResponse(HttpStatus.CREATED, 'Product is created successfully.').sendResponse(res);
-        } catch (error) {
-            throw error;
-        }
+        return ApiResponse.sendResponse(res, HttpStatus.CREATED, 'Product is created successfully.');
     }
 
     @UseGuards(JwtAuthGuard)

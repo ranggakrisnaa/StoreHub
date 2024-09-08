@@ -4,6 +4,8 @@ import {
     UnauthorizedException,
     NotFoundException,
     ForbiddenException,
+    HttpStatus,
+    HttpException,
 } from '@nestjs/common';
 import { Prisma, Token, User } from '@prisma/client';
 import { CreateUserDto } from './dto/register-user.dto';
@@ -33,9 +35,8 @@ export class UserService {
 
         const checkUserEmailOrUsername = await this.findOneByEmailOrUsername(email || username);
 
-        if (checkUserEmailOrUsername) throw new BadRequestException('User already exist.');
-        if (password !== confirmPassword) throw new UnauthorizedException('Password is not match.');
-
+        if (checkUserEmailOrUsername) throw new HttpException('User already exist.', HttpStatus.FORBIDDEN);
+        if (password !== confirmPassword) throw new HttpException('Password is not match.', HttpStatus.UNAUTHORIZED);
         const hashPassword: string = await this.bcryptService.hashPassword(confirmPassword);
 
         return await this.createUser({
@@ -53,15 +54,18 @@ export class UserService {
         const data: Prisma.UserGetPayload<{}> = await this.findUser({
             OR: [{ email: usernameOrEmail }, { username: usernameOrEmail }],
         });
-        if (!data) throw new NotFoundException('User name or email is not found.');
+        if (!data) throw new HttpException('User name or email is not found.', HttpStatus.NOT_FOUND);
 
         const checkPassword: boolean = await this.bcryptService.comparePassword(password, data.password);
-        if (!checkPassword) throw new BadRequestException('Password is invalid.');
+        if (!checkPassword) throw new HttpException('Password is invalid.', HttpStatus.BAD_REQUEST);
 
         if (await this.otpService.checkDayLimit(data.email, 'login'))
-            throw new BadRequestException('Batas percobaan harian telah tercapai.');
+            throw new HttpException('Batas percobaan harian telah tercapai.', HttpStatus.BAD_REQUEST);
         if (await this.otpService.checkThrottle(data.email, 'login'))
-            throw new BadRequestException('Anda telah melebihi batas dalam permintaan otp. Coba lagi dalam 1 menit.');
+            throw new HttpException(
+                'Anda telah melebihi batas dalam permintaan otp. Coba lagi dalam 1 menit.',
+                HttpStatus.BAD_REQUEST,
+            );
 
         const otp: string = await this.otpService.sendEmailOtp(data.email);
         const payload: Prisma.OtpCreateWithoutUserInput = {
@@ -79,10 +83,10 @@ export class UserService {
         const data: Prisma.UserGetPayload<{}> = await this.findUser({
             email,
         });
-        if (!data) throw new NotFoundException('User email is not found.');
+        if (!data) throw new HttpException('User email is not found.', HttpStatus.NOT_FOUND);
 
         const verify: boolean = await this.otpService.verifyOtp(data.id, 'login', otp);
-        if (!verify) throw new BadRequestException('Otp expired or invalid.');
+        if (!verify) throw new HttpException('Otp expired or invalid.', HttpStatus.BAD_REQUEST);
 
         const accessToken: string = await this.generateAccessToken(data);
         const refreshToken: string = await this.generateRefreshToken(data);
@@ -141,10 +145,10 @@ export class UserService {
         const decoded = await this.tokenService.verify(refreshToken);
 
         const foundUser = await this.findUser({ id: decoded.userId });
-        if (!foundUser) throw new ForbiddenException('Unauthenticated User.');
+        if (!foundUser) throw new HttpException('Unauthenticated User.', HttpStatus.BAD_REQUEST);
 
         const foundToken = await this.tokenService.findToken({ refreshToken, userId: foundUser.id });
-        if (!foundToken) throw new ForbiddenException('Unauthenticated User.');
+        if (!foundToken) throw new HttpException('Unauthenticated User.', HttpStatus.BAD_REQUEST);
 
         const accessToken = await this.generateAccessToken(foundUser);
         await this.tokenService.updateToken(foundToken.id, accessToken);
@@ -156,7 +160,7 @@ export class UserService {
         const { user, token } = data;
 
         const foundTokenDB = await this.tokenService.findToken({ userId: user.id, accessToken: token.accessToken });
-        if (!foundTokenDB) throw new NotFoundException('Token user is not found.');
+        if (!foundTokenDB) throw new HttpException('Token user is not found.', HttpStatus.NOT_FOUND);
 
         return await this.tokenService.deleteToken({ userId: foundTokenDB.userId });
     }
@@ -165,10 +169,10 @@ export class UserService {
         const { oldPassword, newPassword } = data;
 
         const foundUser = await this.prisma.user.findFirst({ where: { uuid: userId } });
-        if (!foundUser) throw new NotFoundException('User is not found.');
+        if (!foundUser) throw new HttpException('User is not found.', HttpStatus.NOT_FOUND);
 
         const checkPassword = await this.bcryptService.comparePassword(oldPassword, foundUser.password);
-        if (!checkPassword) throw new BadRequestException('Password is not match.');
+        if (!checkPassword) throw new HttpException('Password is not match.', HttpStatus.BAD_REQUEST);
 
         const hashPassword = await this.bcryptService.hashPassword(newPassword);
         return await this.prisma.user.update({ where: { id: foundUser.id }, data: { password: hashPassword } });
@@ -176,7 +180,7 @@ export class UserService {
 
     async findUserByEmail(data: FindUserByEmailDto): Promise<string> {
         const foundUser = await this.findUser({ email: data.email });
-        if (!foundUser) throw new NotFoundException('User is not found.');
+        if (!foundUser) throw new HttpException('User is not found.', HttpStatus.NOT_FOUND);
 
         return foundUser.uuid;
     }

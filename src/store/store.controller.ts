@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Param, Post, Put, Request, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Request, Res, UseGuards } from '@nestjs/common';
 import { StoreService } from './store.service';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
@@ -17,37 +17,25 @@ export class StoreController {
         @Request() req: Record<any, any>,
         @Res() res: Response,
     ): Promise<Record<string, any>> {
-        try {
-            await this.storeService.createStore(createStoreDto, +req.body.user.id);
+        await this.storeService.createStore(createStoreDto, +req.body.user.id);
 
-            return new ApiResponse(HttpStatus.CREATED, 'Store created successfully.').sendResponse(res);
-        } catch (error) {
-            throw error;
-        }
+        return ApiResponse.sendResponse(res, HttpStatus.CREATED, 'Store created successfully.');
     }
 
     @UseGuards(JwtAuthGuard)
     @Get()
     async getAllStore(@Res() res: Response, @Request() req: Record<any, any>): Promise<Record<string, any>> {
-        try {
-            const data = await this.storeService.getAllStore({ userId: req.user.id });
+        const data = await this.storeService.getAllStore({ userId: req.user.id });
 
-            return new ApiResponse(HttpStatus.OK, 'Store data retrieved successfully.', data).sendResponse(res);
-        } catch (error) {
-            throw error;
-        }
+        return ApiResponse.sendResponse(res, HttpStatus.OK, 'Store data retrieved successfully.', data);
     }
 
     @UseGuards(JwtAuthGuard)
     @Get(':id')
     async getStore(@Param('id') id: number, @Res() res: Response): Promise<Record<string, any>> {
-        try {
-            const data = await this.storeService.getStore({ id });
+        const data = await this.storeService.getStore({ id });
 
-            return new ApiResponse(HttpStatus.CREATED, 'Store data retrieved successfully.', data).sendResponse(res);
-        } catch (error) {
-            throw error;
-        }
+        return ApiResponse.sendResponse(res, HttpStatus.CREATED, 'Store data retrieved successfully.', data);
     }
 
     @UseGuards(JwtAuthGuard)
@@ -57,12 +45,16 @@ export class StoreController {
         @Res() res: Response,
         @Param('id') id: string,
     ): Promise<Record<string, any>> {
-        try {
-            await this.storeService.updateStore(updateStoreDto, +id);
+        await this.storeService.updateStore(updateStoreDto, +id);
 
-            return new ApiResponse(HttpStatus.OK, 'Store updated successfully.').sendResponse(res);
-        } catch (error) {
-            throw error;
-        }
+        return ApiResponse.sendResponse(res, HttpStatus.OK, 'Store updated successfully.');
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Delete(':id')
+    async deleteStore(@Param('id') id: string, @Res() res: Response) {
+        await this.storeService.deleteStore({ id: +id });
+
+        return ApiResponse.sendResponse(res, HttpStatus.OK, 'Store deleted successfully.');
     }
 }

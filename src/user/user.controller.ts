@@ -25,53 +25,35 @@ export class UserController {
 
     @Post('register')
     async register(@Body() createUserDto: CreateUserDto, @Res() res: Response): Promise<Record<string, any>> {
-        try {
-            const data = await this.usersService.register(createUserDto);
+        const data = await this.usersService.register(createUserDto);
 
-            return new ApiResponse(HttpStatus.CREATED, 'User created successfully.', data).sendResponse(res);
-        } catch (error) {
-            throw error;
-        }
+        return ApiResponse.sendResponse(res, HttpStatus.CREATED, 'User created successfully.', data);
     }
 
     @Post('login')
     async login(@Body() loginUserDto: LoginUserDto, @Res() res: Response): Promise<Record<string, any>> {
-        try {
-            const { data, otp } = await this.usersService.login(loginUserDto);
+        const { data, otp } = await this.usersService.login(loginUserDto);
 
-            return new ApiResponse(HttpStatus.OK, 'User login successfully.', { otp, email: data.email }).sendResponse(
-                res,
-            );
-        } catch (error) {
-            throw error;
-        }
+        return ApiResponse.sendResponse(res, HttpStatus.OK, 'User login successfully.', { otp, email: data.email });
     }
 
     @Post('verify-otp')
     async verify(@Body() verifyOtpDto: VerifyOtpDto, @Res() res: Response): Promise<Record<string, any>> {
-        try {
-            const { accessToken, refreshToken } = await this.usersService.verifyOtp(verifyOtpDto);
+        const { accessToken, refreshToken } = await this.usersService.verifyOtp(verifyOtpDto);
 
-            return new ApiResponse(HttpStatus.OK, 'User verified successfully.', {
-                accessToken,
-                refreshToken,
-            }).sendResponse(res);
-        } catch (error) {
-            throw error;
-        }
+        return ApiResponse.sendResponse(res, HttpStatus.OK, 'User verified successfully.', {
+            accessToken,
+            refreshToken,
+        });
     }
 
     @Post('find-user')
     async findUserByEmail(@Body() findUserByEmailDto: FindUserByEmailDto, @Res() res: Response) {
-        try {
-            const data = await this.usersService.findUserByEmail(findUserByEmailDto);
+        const data = await this.usersService.findUserByEmail(findUserByEmailDto);
 
-            return new ApiResponse(HttpStatus.OK, 'User verified successfully.', {
-                userId: data,
-            }).sendResponse(res);
-        } catch (error) {
-            throw error;
-        }
+        return ApiResponse.sendResponse(res, HttpStatus.OK, 'User verified successfully.', {
+            userId: data,
+        });
     }
 
     @Post('change-password/:userId')
@@ -80,24 +62,16 @@ export class UserController {
         @Res() res: Response,
         @Param('userId') userId: string,
     ): Promise<Record<string, any>> {
-        try {
-            const data = await this.usersService.changePassword(changePasswordDto, userId);
+        const data = await this.usersService.changePassword(changePasswordDto, userId);
 
-            return new ApiResponse(HttpStatus.OK, 'User changed password successfully.', data).sendResponse(res);
-        } catch (error) {
-            throw error;
-        }
+        return ApiResponse.sendResponse(res, HttpStatus.OK, 'User changed password successfully.', data);
     }
 
     @Post('refresh')
     async refresh(@Body() data: Record<any, any>, @Res() res: Response): Promise<Record<string, any>> {
-        try {
-            const accessToken = await this.usersService.refresh(data.refreshToken);
+        const accessToken = await this.usersService.refresh(data.refreshToken);
 
-            return new ApiResponse(HttpStatus.OK, 'Token Refreshed successfully.', { accessToken }).sendResponse(res);
-        } catch (error) {
-            throw error;
-        }
+        return ApiResponse.sendResponse(res, HttpStatus.OK, 'Token Refreshed successfully.', { accessToken });
     }
 
     @UseGuards(JwtAuthGuard)
@@ -107,12 +81,8 @@ export class UserController {
         @Res() res: Response,
         @Request() req: Record<any, any>,
     ): Promise<Record<string, any>> {
-        try {
-            await this.usersService.logout(req.body);
+        await this.usersService.logout(req.body);
 
-            return new ApiResponse(HttpStatus.OK, 'User logout successfully.').sendResponse(res);
-        } catch (error) {
-            throw error;
-        }
+        return ApiResponse.sendResponse(res, HttpStatus.OK, 'User logout successfully.');
     }
 }

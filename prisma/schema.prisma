@@ -153,36 +153,48 @@ model Province {
 }
 
 model Product {
-  id                Int      @unique @default(autoincrement())
-  storeId           Int      @map("store_id")
-  productCategoryId Int?     @map("product_category_id")
-  name              String
-  quantity          Int
-  description       String   @db.Text
-  SKU               String
-  price             Float    @db.DoublePrecision
-  createdAt         DateTime @default(now()) @map("created_at")
-  updatedAt         DateTime @updatedAt @map("updated_at")
+  id          Int      @unique @default(autoincrement())
+  storeId     Int      @map("store_id")
+  name        String
+  quantity    Int
+  description String   @db.Text
+  SKU         String
+  price       Float    @db.DoublePrecision
+  discount       Float    @db.DoublePrecision
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
-  Store             Store              @relation(fields: [storeId], references: [id])
-  ProductCategories ProductCategories? @relation(fields: [productCategoryId], references: [id])
-  ProductPhotos     ProductPhotos[]
+  Store           Store             @relation(fields: [storeId], references: [id])
+  ProductPhoto    ProductPhoto[]
+  ProductCategory ProductCategory[]
 
   @@map("products")
 }
 
-model ProductCategories {
-  id        Int      @unique @default(autoincrement())
-  name      String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+model ProductCategory {
+  id         Int      @unique @default(autoincrement())
+  productId  Int      @map("product_id")
+  categoryId Int      @map("category_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
 
-  Product Product[]
+  Product  Product  @relation(fields: [productId], references: [id])
+  Category Category @relation(fields: [categoryId], references: [id])
 
   @@map("product_categories")
 }
 
-model ProductPhotos {
+model Category {
+  id              Int               @unique @default(autoincrement())
+  name            String
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+  ProductCategory ProductCategory[]
+
+  @@map("categories")
+}
+
+model ProductPhoto {
   id        Int      @unique @default(autoincrement())
   productId Int      @map("product_id")
   photoUrl  String   @map("photo_url")

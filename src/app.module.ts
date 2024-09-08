@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './user/user.module';
@@ -12,6 +12,9 @@ import { ProductModule } from './product/product.module';
 import { SupabaseModule } from './supabase/supabase.module';
 import { RegionModule } from './region/region.module';
 import otpConfig from './otp/otp.config';
+import { ErrorHandlingMiddleware } from './error-handle/error-handle.middleware';
+import { APP_FILTER } from '@nestjs/core';
+import { HttpExceptionFilter } from './http-exception/http-exception.filter';
 
 @Module({
     imports: [
@@ -30,6 +33,16 @@ import otpConfig from './otp/otp.config';
         RegionModule,
     ],
     controllers: [AppController],
-    providers: [AppService],
+    providers: [
+        AppService,
+        {
+            provide: APP_FILTER,
+            useClass: HttpExceptionFilter,
+        },
+    ],
 })
-export class AppModule {}
+export class AppModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(ErrorHandlingMiddleware).forRoutes('*');
+    }
+}
