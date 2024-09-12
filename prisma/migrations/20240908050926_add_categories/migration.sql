@@ -1,23 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the column `name` on the `product_categories` table. All the data in the column will be lost.
-  - You are about to drop the column `product_category_id` on the `products` table. All the data in the column will be lost.
-  - Added the required column `category_id` to the `product_categories` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `product_id` to the `product_categories` table without a default value. This is not possible if the table is not empty.
-
-*/
--- DropForeignKey
-ALTER TABLE "products" DROP CONSTRAINT "products_product_category_id_fkey";
-
--- AlterTable
-ALTER TABLE "product_categories" DROP COLUMN "name",
-ADD COLUMN     "category_id" INTEGER NOT NULL,
-ADD COLUMN     "product_id" INTEGER NOT NULL;
-
--- AlterTable
-ALTER TABLE "products" DROP COLUMN "product_category_id";
-
 -- CreateTable
 CREATE TABLE "categories" (
     "id" SERIAL NOT NULL,

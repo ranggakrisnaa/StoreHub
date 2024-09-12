@@ -18,3 +18,6 @@ CREATE INDEX "stores_user_id_idx" ON "stores"("user_id");
 
 -- AddForeignKey
 ALTER TABLE "stores" ADD CONSTRAINT "stores_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- CreateIndex
+CREATE UNIQUE INDEX "stores_user_id_key" ON "stores"("user_id");

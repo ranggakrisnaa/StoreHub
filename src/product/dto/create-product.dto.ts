@@ -1,17 +1,23 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
+enum InStock {
+    YES = 'YES',
+    NO = 'NO',
+}
+
+enum StatusProduct {
+    PUBLISHED = 'PUBLISHED',
+    INACTIVE = 'INACTIVE',
+    SCHEDULED = 'SCHEDULED',
+}
 export class CreateProductDto {
-    @IsString()
-    @IsNotEmpty()
-    productCategoryId: string;
-
     @IsString()
     @IsNotEmpty()
     name: string;
 
-    @IsString()
+    @IsNumber()
     @IsNotEmpty()
-    quantity: string;
+    quantity: number;
 
     @IsString()
     @IsNotEmpty()
@@ -21,7 +27,17 @@ export class CreateProductDto {
     @IsNotEmpty()
     SKU: string;
 
-    @IsString()
+    @IsNumber()
     @IsNotEmpty()
-    price: string;
+    price: number;
+
+    @IsNumber()
+    @IsNotEmpty()
+    discount: number;
+
+    @IsEnum(InStock)
+    inStock: any;
+
+    @IsEnum(StatusProduct)
+    status: any;
 }
