@@ -1,10 +1,19 @@
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException, UnauthorizedException } from '@nestjs/common';
+import {
+    Injectable,
+    CanActivate,
+    ExecutionContext,
+    ForbiddenException,
+    UnauthorizedException,
+    HttpException,
+    HttpStatus,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Prisma } from '@prisma/client';
 import { JwtPayload } from 'jsonwebtoken';
 import { TokenService } from '../token/token.service';
 import { UserService } from '../user/user.service';
+import { verify } from 'crypto';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -16,28 +25,23 @@ export class JwtAuthGuard implements CanActivate {
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        try {
-            const request = context.switchToHttp().getRequest();
-            const authHeader = request.headers.authorization;
+        const request = context.switchToHttp().getRequest();
 
-            if (!authHeader) return false;
-            const token = authHeader.split(' ')[1];
-            const decoded: JwtPayload = await this.jwtService.verifyAsync(token, {
-                secret: this.configService.get('JWT_SECRET'),
-            });
+        const authHeader = request.headers.authorization;
+        if (!authHeader) throw new HttpException('User token is not found.', HttpStatus.NOT_FOUND);
 
-            const foundToken: Prisma.TokenGetPayload<{}> = await this.tokenService.findToken({ accessToken: token });
-            if (!foundToken) throw new ForbiddenException('Unauthenticated User.');
+        const token = authHeader.split(' ')[1];
+        const decoded: JwtPayload = await this.tokenService.verify(token);
 
-            const foundUser: Prisma.UserGetPayload<{}> = await this.userService.findUser({ email: decoded.email });
-            if (!foundUser) throw new ForbiddenException('Unauthenticated User.');
+        const foundToken: Prisma.TokenGetPayload<{}> = await this.tokenService.findToken({ accessToken: token });
+        if (!foundToken) throw new HttpException('Unauthenticated User.', HttpStatus.FORBIDDEN);
 
-            request.body.user = foundUser;
-            request.body.token = foundToken;
+        const foundUser: Prisma.UserGetPayload<{}> = await this.userService.findUser({ email: decoded.email });
+        if (!foundUser) throw new HttpException('Unauthenticated User.', HttpStatus.FORBIDDEN);
 
-            return true;
-        } catch (error) {
-            throw new UnauthorizedException(error.message);
-        }
+        request.body.user = foundUser;
+        request.body.token = foundToken;
+
+        return true;
     }
 }

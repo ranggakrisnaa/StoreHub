@@ -14,3 +14,6 @@ ALTER TABLE "product_categories" ADD CONSTRAINT "product_categories_product_id_f
 
 -- AddForeignKey
 ALTER TABLE "product_categories" ADD CONSTRAINT "product_categories_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "categories"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AlterTable
+ALTER TABLE "categories" ADD COLUMN     "description" TEXT NOT NULL;

@@ -40,16 +40,16 @@ export class TokenService {
         return this.prisma.token.deleteMany({ where });
     }
 
-    async verify(refreshToken: string) {
+    async verify(token: string) {
         try {
-            const decoded = await this.jwtService.verifyAsync(refreshToken, {
+            const decoded = await this.jwtService.verifyAsync(token, {
                 secret: this.configService.get('JWT_SECRET'),
             });
 
             return decoded;
         } catch (error) {
             if (error instanceof TokenExpiredError || error instanceof JsonWebTokenError)
-                throw new UnauthorizedException('Refresh token has expired');
+                throw new UnauthorizedException('Token has been expired or invalid');
 
             throw new ForbiddenException('Failed to authenticate token');
         }

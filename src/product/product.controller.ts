@@ -7,6 +7,7 @@ import {
     Param,
     Post,
     Put,
+    Query,
     Res,
     UploadedFiles,
     UseGuards,
@@ -19,6 +20,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiResponse } from 'src/response/api-response.dto';
 import { ProductImage } from './dto/product-image.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Controller('v1/products')
 export class ProductController {
@@ -30,7 +32,7 @@ export class ProductController {
         @Body() createProductDto: CreateProductDto,
         @Param('storeId') storeId: string,
         @Res() res: Response,
-    ) {
+    ): Promise<Record<string, any>> {
         const data = await this.productService.createProduct(createProductDto, +storeId);
 
         return ApiResponse.sendResponse(res, HttpStatus.CREATED, 'Product is created successfully.', data.uuid);
@@ -43,7 +45,7 @@ export class ProductController {
         @UploadedFiles() files: Array<Express.Multer.File>,
         @Param('productId') productId: string,
         @Res() res: Response,
-    ) {
+    ): Promise<Record<string, any>> {
         await this.productService.saveProductImage(files, productId);
 
         return ApiResponse.sendResponse(res, HttpStatus.CREATED, 'Product image is created successfully.');
@@ -51,18 +53,48 @@ export class ProductController {
 
     @UseGuards(JwtAuthGuard)
     @Get()
-    async getAllProduct() {}
+    async getAllProduct(@Res() res: Response): Promise<Record<string, any>> {
+        const data = await this.productService.getAllProduct();
+
+        return ApiResponse.sendResponse(res, HttpStatus.OK, 'Product data retrieved successfully.', data);
+    }
 
     @UseGuards(JwtAuthGuard)
     @Get(':productId')
-    async getDetailProduct() {}
+    async getDetailProduct(@Param('productId') productId: string, @Res() res: Response): Promise<Record<string, any>> {
+        const data = await this.productService.getDetailProduct({ uuid: productId });
+
+        return ApiResponse.sendResponse(res, HttpStatus.OK, 'Product data retrieved successfully.', data);
+    }
 
     @UseGuards(JwtAuthGuard)
-    @UseInterceptors(FilesInterceptor('files'))
     @Put(':productId')
-    async updateProduct() {}
+    async updateProduct(
+        @Body() updateProductDto: UpdateProductDto,
+        @Param('productId') productId: string,
+        @Res() res: Response,
+    ): Promise<Record<string, any>> {
+        const data = await this.productService.updateProduct(updateProductDto, productId);
+
+        return ApiResponse.sendResponse(res, HttpStatus.OK, 'Product data updated successfully.', data);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Put('images/:productId')
+    @UseInterceptors(FilesInterceptor('files'))
+    async updateProductImage(
+        @UploadedFiles() files: Array<Express.Multer.File>,
+        @Param('productId') productId: string,
+        @Query('productPhotoId') productPhotoId: string,
+        @Res() res: Response,
+    ): Promise<Record<string, any>> {
+        console.log({ productId });
+        const data = await this.productService.updateProductImage(files, productId, +productPhotoId);
+
+        return ApiResponse.sendResponse(res, HttpStatus.OK, 'Product data image updated successfully.', data);
+    }
 
     @UseGuards(JwtAuthGuard)
     @Delete(':productId')
-    async deleteProduct() {}
+    async deleteProduct(@Res() res: Response) {}
 }

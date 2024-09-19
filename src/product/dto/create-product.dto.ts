@@ -1,11 +1,11 @@
-import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsObject, IsString } from 'class-validator';
 
-enum InStock {
+export enum InStock {
     YES = 'YES',
     NO = 'NO',
 }
 
-enum StatusProduct {
+export enum StatusProduct {
     PUBLISHED = 'PUBLISHED',
     INACTIVE = 'INACTIVE',
     SCHEDULED = 'SCHEDULED',
@@ -36,8 +36,14 @@ export class CreateProductDto {
     discount: number;
 
     @IsEnum(InStock)
-    inStock: any;
+    inStock: InStock;
 
     @IsEnum(StatusProduct)
-    status: any;
+    status: StatusProduct;
+
+    @IsObject()
+    token: object;
+
+    @IsObject()
+    user: object;
 }

@@ -57,7 +57,6 @@ export class StoreService {
         if (!foundStore) throw new HttpException('User store is not found.', HttpStatus.NOT_FOUND);
 
         const { address, villageId, ...storeData } = data;
-
         const store = await this.prisma.store.update({
             data: storeData,
             where: {
@@ -86,6 +85,7 @@ export class StoreService {
         data: Prisma.AddressUpdateInput;
     }): Promise<Address> {
         const { data, where } = params;
+
         return this.prisma.address.update({
             data,
             where,

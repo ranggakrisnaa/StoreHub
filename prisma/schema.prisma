@@ -190,10 +190,12 @@ model ProductCategory {
 }
 
 model Category {
-  id              Int               @unique @default(autoincrement())
-  name            String
-  createdAt       DateTime          @default(now()) @map("created_at")
-  updatedAt       DateTime          @updatedAt @map("updated_at")
+  id          Int      @unique @default(autoincrement())
+  name        String
+  description String
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
   ProductCategory ProductCategory[]
 
   @@map("categories")
