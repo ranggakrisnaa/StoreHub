@@ -12,8 +12,7 @@ export class StoreService {
         const foundVillage = await this.prisma.village.findFirst({
             where: { id: data?.villageId },
         });
-
-        if (!foundVillage) throw new HttpException('village data is not found.', HttpStatus.NOT_FOUND);
+        if (!foundVillage) throw new HttpException('Village data is not found.', HttpStatus.NOT_FOUND);
 
         const store = await this.prisma.store.create({
             data: {
@@ -25,7 +24,7 @@ export class StoreService {
             },
         });
 
-        await this.createAddressStore(data.address, store.id, data.villageId);
+        await this.createAddressStore(data.address, store.id, foundVillage.id);
 
         return store;
     }

@@ -15,6 +15,7 @@ import otpConfig from './otp/otp.config';
 import { ErrorHandlingMiddleware } from './error-handle/error-handle.middleware';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from './http-exception/http-exception.filter';
+import { CartModule } from './cart/cart.module';
 
 @Module({
     imports: [
@@ -31,6 +32,7 @@ import { HttpExceptionFilter } from './http-exception/http-exception.filter';
         ProductModule,
         SupabaseModule,
         RegionModule,
+        CartModule,
     ],
     controllers: [AppController],
     providers: [

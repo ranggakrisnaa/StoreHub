@@ -12,3 +12,9 @@ CREATE UNIQUE INDEX "product_photos_id_key" ON "product_photos"("id");
 
 -- AddForeignKey
 ALTER TABLE "product_photos" ADD CONSTRAINT "product_photos_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- DropForeignKey
+ALTER TABLE "product_photos" DROP CONSTRAINT "product_photos_product_id_fkey";
+
+-- AddForeignKey
+ALTER TABLE "product_photos" ADD CONSTRAINT "product_photos_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;

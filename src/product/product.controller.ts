@@ -19,7 +19,6 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiResponse } from 'src/response/api-response.dto';
-import { ProductImage } from './dto/product-image.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
 @Controller('v1/products')
@@ -88,7 +87,6 @@ export class ProductController {
         @Query('productPhotoId') productPhotoId: string,
         @Res() res: Response,
     ): Promise<Record<string, any>> {
-        console.log({ productId });
         const data = await this.productService.updateProductImage(files, productId, +productPhotoId);
 
         return ApiResponse.sendResponse(res, HttpStatus.OK, 'Product data image updated successfully.', data);
@@ -96,5 +94,13 @@ export class ProductController {
 
     @UseGuards(JwtAuthGuard)
     @Delete(':productId')
-    async deleteProduct(@Res() res: Response) {}
+    async deleteProduct(
+        @Param('productId') productId: string,
+        @Query('productManyId') productManyId: string[],
+        @Res() res: Response,
+    ) {
+        await this.productService.deleteProduct(productId, productManyId);
+
+        return ApiResponse.sendResponse(res, HttpStatus.OK, 'Product data image deleted successfully.');
+    }
 }

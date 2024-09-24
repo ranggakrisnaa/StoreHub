@@ -95,7 +95,7 @@ export class ProductService {
         });
     }
 
-    async getDetailProduct(where: Prisma.ProductWhereInput) {
+    async getDetailProduct(where: Prisma.ProductWhereInput): Promise<Record<string, any> | null> {
         return this.prisma.product.findFirst({
             where,
             select: {
@@ -161,7 +161,11 @@ export class ProductService {
         return `${this.baseUrl}${uploadData.path}`;
     }
 
-    async updateProductImage(files: Array<Express.Multer.File>, productId: string, productPhotoId: number) {
+    async updateProductImage(
+        files: Array<Express.Multer.File>,
+        productId: string,
+        productPhotoId: number,
+    ): Promise<boolean> {
         if (!isUUID(productId)) throw new HttpException('Invalid productId format', HttpStatus.BAD_REQUEST);
         if (!files) throw new HttpException('Image data is not found.', HttpStatus.NOT_FOUND);
 
@@ -195,6 +199,35 @@ export class ProductService {
                     id: productPhotoId,
                 },
             });
+        }
+
+        return true;
+    }
+
+    async deleteProduct(productId: string, productManyId: string[]): Promise<boolean> {
+        if (productManyId && productManyId.length > 0) {
+            const foundManyProduct = await this.prisma.product.findFirst({
+                where: {
+                    id: { in: productManyId.map((prodId) => +prodId) },
+                },
+            });
+            if (!foundManyProduct) {
+                throw new HttpException('Product data is not found.', HttpStatus.NOT_FOUND);
+            }
+
+            await this.prisma.product.deleteMany({
+                where: {
+                    id: { in: productManyId.map((prodId) => +prodId) },
+                },
+            });
+        } else {
+            const foundProduct = await this.getProduct({ uuid: productId });
+
+            if (!foundProduct) {
+                throw new HttpException('Product data is not found.', HttpStatus.NOT_FOUND);
+            }
+
+            await this.prisma.product.delete({ where: { id: foundProduct.id } });
         }
 
         return true;
