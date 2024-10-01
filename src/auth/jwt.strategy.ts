@@ -21,7 +21,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     async signAccessToken(payload: JwtPayload): Promise<string> {
         return jwt.sign(payload, this.configService.get('JWT_SECRET'), {
-            expiresIn: '15m',
+            expiresIn: '1d',
         });
     }
 

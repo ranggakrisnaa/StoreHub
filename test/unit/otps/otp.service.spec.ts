@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import nodemailer from 'nodemailer';
 import * as Twilio from 'twilio';
-import { OtpService } from 'src/otps/otp.service';
+import { OtpService } from 'src/otp/otp.service';
 
 describe('OtpService', () => {
     let service: OtpService;

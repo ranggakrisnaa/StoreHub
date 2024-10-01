@@ -25,10 +25,11 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  Token   Token[]
-  Otp     Otp[]
-  Store   Store[]
-  Address Address[]
+  Token    Token[]
+  Otp      Otp[]
+  Store    Store[]
+  Address  Address[]
+  CartItem CartItem[]
 
   @@map("users")
 }
@@ -64,7 +65,7 @@ model Otp {
 model Store {
   id          Int      @unique @default(autoincrement())
   uuid        String   @default(uuid()) @db.Uuid
-  userId      Int      @map("user_id")
+  userId      Int      @unique @map("user_id")
   name        String   @db.VarChar(200)
   description String   @db.Text
   createdAt   DateTime @default(now()) @map("created_at")
@@ -153,35 +154,117 @@ model Province {
 }
 
 model Product {
-  id                Int      @unique @default(autoincrement())
-  storeId           Int      @map("store_id")
-  productCategoryId Int?     @map("product_category_id")
-  name              String
-  quantity          Int
-  description       String   @db.Text
-  SKU               String
-  price             Float    @db.DoublePrecision
-  createdAt         DateTime @default(now()) @map("created_at")
-  updatedAt         DateTime @updatedAt @map("updated_at")
+  id          Int           @unique @default(autoincrement())
+  uuid        String        @unique @default(uuid()) @db.Uuid
+  storeId     Int           @map("store_id")
+  name        String
+  quantity    Int
+  description String        @db.Text
+  SKU         String
+  price       Float         @db.DoublePrecision
+  discount    Float         @db.DoublePrecision
+  inStock     InStock       @default(NO) @map("in_stock")
+  status      StatusProduct @default(PUBLISHED)
+  publishDate DateTime?     @map("publish_Date") @db.Date
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
 
-  Store             Store              @relation(fields: [storeId], references: [id])
-  ProductCategories ProductCategories? @relation(fields: [productCategoryId], references: [id])
+  Store           Store             @relation(fields: [storeId], references: [id])
+  ProductPhoto    ProductPhoto[]
+  ProductCategory ProductCategory[]
+  ProductVariant  ProductVariant[]
+  CartItem        CartItem[]
 
   @@map("products")
 }
 
-model ProductCategories {
+model ProductCategory {
+  id         Int      @unique @default(autoincrement())
+  productId  Int      @map("product_id")
+  categoryId Int      @map("category_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  Product  Product  @relation(fields: [productId], references: [id])
+  Category Category @relation(fields: [categoryId], references: [id])
+
+  @@map("product_categories")
+}
+
+model Category {
+  id          Int      @unique @default(autoincrement())
+  name        String
+  description String
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  ProductCategory ProductCategory[]
+
+  @@map("categories")
+}
+
+model ProductPhoto {
   id        Int      @unique @default(autoincrement())
-  name      String
+  productId Int      @map("product_id")
+  photoUrl  String   @map("photo_url")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  Product Product[]
+  Product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  @@map("product_categories")
+  @@map("product_photos")
+}
+
+model Variant {
+  id             Int              @unique @default(autoincrement())
+  name           String
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  ProductVariant ProductVariant[]
+
+  @@map("variants")
+}
+
+model ProductVariant {
+  id           Int      @unique @default(autoincrement())
+  productId    Int      @map("product_id")
+  variantId    Int      @map("variant_id")
+  variantValue String   @map("variant_value")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  Product Product @relation(fields: [productId], references: [id])
+  Variant Variant @relation(fields: [variantId], references: [id])
+
+  @@map("product_variants")
+}
+
+model CartItem {
+  id        Int      @unique @default(autoincrement())
+  userId    Int      @map("user_id")
+  productId Int      @map("product_id")
+  quantity  Int
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  Product Product @relation(fields: [productId], references: [id])
+  User    User    @relation(fields: [userId], references: [id])
+
+  @@map("cart_items")
 }
 
 enum Role {
   ADMIN
   USER
+}
+
+enum InStock {
+  YES
+  NO
+}
+
+enum StatusProduct {
+  PUBLISHED
+  INACTIVE
+  SCHEDULED
 }

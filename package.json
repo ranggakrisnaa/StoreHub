@@ -11,7 +11,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
+    "start:debug": "nest start   --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
@@ -49,11 +49,14 @@
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.0.0",
     "@prisma/client": "^5.16.1",
+    "@supabase/supabase-js": "^2.45.1",
     "@types/bcrypt": "^5.0.2",
     "@types/dotenv": "^8.2.0",
+    "@types/multer": "^1.4.11",
     "@types/nodemailer": "^6.4.15",
     "@types/otp-generator": "^4.0.2",
     "@types/passport-jwt": "^4.0.1",
+    "@types/uuid": "^10.0.0",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
@@ -65,7 +68,8 @@
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "tsx": "^4.16.3",
-    "twilio": "^5.2.2"
+    "twilio": "^5.2.2",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

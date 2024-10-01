@@ -4,7 +4,7 @@ import { default as districts } from '../../public/data/districts.json';
 import { default as villages } from '../../public/data/villages.json';
 import { PrismaService } from '../../src/prisma.service';
 
-export default class Region {
+export class Region {
     constructor(private readonly prisma?: PrismaService) {}
 
     public async run(): Promise<void> {
