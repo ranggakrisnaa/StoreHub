@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { PrismaClientExceptionFilter } from './prisma-client-exception/prisma-client-exception.filter';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
+import { ApiKeyGuard } from './api-key/api-key.middleware';
 
 const server = express();
 
@@ -13,6 +14,7 @@ async function bootstrap() {
 
     app.useGlobalPipes(new ValidationPipe());
     app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
+    app.useGlobalGuards(new ApiKeyGuard());
 
     app.enableCors();
     await app.listen(3000);
